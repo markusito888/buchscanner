@@ -1,0 +1,22 @@
+# Schlüssel & lokale Einstellungen
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+.claude/settings.local.json
+
+# System
+.DS_Store
+
+# Abhängigkeiten & Build
+node_modules/
+dist/
+build/
+.next/
+__pycache__/
+*.pyc
+.venv/
+
+# Netlify
+.netlify/

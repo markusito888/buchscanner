@@ -1,0 +1,11 @@
+{
+  "name": "Buchscanner",
+  "beschreibung": "iPhone-Web-App zum schnellen Scannen von Dokumenten und ganzen Büchern mit Texterkennung und Export an Claude. Dazu ein normaler Scan als Bild oder PDF.",
+  "typ": "app",
+  "status": "idee",
+  "start": "app/index.html",
+  "tags": ["iphone", "scanner", "ocr", "pwa", "claude"],
+  "naechsteSchritte": ["Feature-Liste bestätigen", "/spec F01 – Grundgerüst und Netlify"],
+  "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
+  "verlauf": [{ "datum": "2026-11-15", "text": "Projekt angelegt: Stufe light, Web-App, Netlify, Texterkennung DE/EN/ES, Export an die Claude-App." }]
+}
