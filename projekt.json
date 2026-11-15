@@ -5,7 +5,7 @@
   "status": "idee",
   "start": "app/index.html",
   "tags": ["iphone", "scanner", "ocr", "pwa", "claude"],
-  "naechsteSchritte": ["Feature-Liste bestätigen", "/spec F01 – Grundgerüst und Netlify"],
+  "naechsteSchritte": ["/umsetzen F01 – Grundgerüst und GitHub Pages"],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
-  "verlauf": [{ "datum": "2026-11-15", "text": "Projekt angelegt: Stufe light, Web-App, Netlify, Texterkennung DE/EN/ES, Export an die Claude-App." }]
+  "verlauf": [{ "datum": "2026-11-15", "text": "Projekt angelegt: Stufe light, Web-App, Netlify, Texterkennung DE/EN/ES, Export an die Claude-App." }, { "datum": "2026-11-15", "text": "Spec F01 Grundgerüst geschrieben; Hosting auf GitHub Pages umgestellt." }]
 }

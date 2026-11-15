@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Buchscanner</title>
+  <meta name="description" content="Dokumente und Bücher scannen, Text erfassen und an Claude weitergeben.">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#11161d" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Buchscanner">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="start">
+    <header class="kopf">
+      <img class="logo" src="icons/icon.svg" alt="" width="72" height="72">
+      <h1>Buchscanner</h1>
+      <p class="unterzeile">Scannen, Text erfassen, an Claude weitergeben.</p>
+    </header>
+
+    <nav class="knoepfe">
+      <button class="knopf knopf-haupt" type="button" data-funktion="text">
+        <span class="knopf-titel">Buch / Dokument mit Text</span>
+        <span class="knopf-info">Viele Seiten scannen, Text erfassen</span>
+      </button>
+      <button class="knopf" type="button" data-funktion="scan">
+        <span class="knopf-titel">Normaler Scan</span>
+        <span class="knopf-info">Als Bild oder PDF speichern</span>
+      </button>
+    </nav>
+
+    <footer class="fuss">Version <span id="version"></span></footer>
+  </main>
+
+  <div id="hinweis" class="hinweis" role="status" aria-live="polite" hidden></div>
+
+  <div id="update" class="update" role="alert" hidden>
+    <span>Neue Version verfügbar</span>
+    <button id="update-knopf" type="button">Neu laden</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
