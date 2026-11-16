@@ -38,6 +38,13 @@
       </button>
     </nav>
 
+    <section class="meine" aria-labelledby="meine-titel">
+      <h2 id="meine-titel">Meine Scans</h2>
+      <p id="meine-leer" class="meine-leer" hidden>Noch keine Scans</p>
+      <div id="meine-liste" class="meine-liste"></div>
+      <p id="belegt" class="belegt"></p>
+    </section>
+
     <footer class="fuss">Version <span id="version"></span></footer>
   </main>
 
@@ -69,9 +76,9 @@
   <!-- Seitenübersicht -->
   <section id="ansicht-uebersicht" class="seite-ansicht" hidden>
     <header class="leiste">
-      <button id="ueb-schliessen" class="text-knopf" type="button">Schließen</button>
+      <button id="ueb-zurueck" class="text-knopf" type="button">‹ Scans</button>
       <div class="leiste-titel">
-        <strong id="ueb-art"></strong>
+        <button id="ueb-name" class="name-knopf" type="button" aria-label="Umbenennen"></button>
         <span id="ueb-anzahl"></span>
       </div>
       <span class="text-knopf platzhalter" aria-hidden="true"></span>
@@ -82,8 +89,8 @@
         <button type="button" data-kontrast="grau">Grau</button>
         <button type="button" data-kontrast="dokument">Dokument</button>
       </div>
-      <p class="speicher-hinweis">Noch kein Speichern: Seiten gehen beim Schließen der App verloren.</p>
       <div id="raster" class="raster"></div>
+      <button id="scan-loeschen" class="knopf-klein knopf-gefahr scan-loeschen" type="button">Scan löschen</button>
     </div>
     <div class="fuss-leiste">
       <button id="ueb-plus" class="knopf-voll" type="button">+ Seiten</button>
@@ -125,6 +132,18 @@
     </form>
   </dialog>
 
+  <!-- Umbenennen -->
+  <dialog id="umbenennen" class="frage">
+    <form method="dialog">
+      <p><label for="name-feld">Umbenennen</label></p>
+      <input id="name-feld" class="name-feld" type="text" maxlength="80" autocomplete="off" enterkeyhint="done">
+      <div class="frage-knoepfe">
+        <button value="nein" type="submit" class="knopf-klein">Abbrechen</button>
+        <button value="ja" type="submit" id="name-sichern" class="knopf-klein knopf-akzent">Sichern</button>
+      </div>
+    </form>
+  </dialog>
+
   <div id="hinweis" class="hinweis" role="status" aria-live="polite" hidden></div>
 
   <div id="update" class="update" role="alert" hidden>
@@ -133,6 +152,7 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="speicher.js"></script>
   <script src="scan.js"></script>
 </body>
 </html>

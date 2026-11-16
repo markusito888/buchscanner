@@ -1,6 +1,6 @@
-// Buchscanner – F02: Seiten aufnehmen.
-// Live-Kamera (Buch), iPhone-Kamera (normaler Scan), Übersicht, Großansicht, Kontrast.
-// Die Seiten liegen nur im Arbeitsspeicher (dauerhaftes Speichern kommt mit F03).
+// Buchscanner – F02/F03: Seiten aufnehmen und dauerhaft speichern.
+// Live-Kamera (Buch), iPhone-Kamera (normaler Scan), Übersicht, Großansicht, Kontrast,
+// Liste „Meine Scans“. Jede Änderung wird sofort gespeichert (speicher.js).
 'use strict';
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -9,8 +9,11 @@
   const VORSCHAU = 300; // Kantenlänge der Vorschaubilder in px
   const GROSS = 1600; // Kantenlänge der Großansicht in px
 
-  let scan = null; // { art: 'buch'|'normal', kontrast: 'farbe'|'grau'|'dokument', seiten: [] }
-  let naechsteId = 1;
+  // Offener Scan: { id, art: 'buch'|'normal', name, kontrast: 'farbe'|'grau'|'dokument', angelegt, geaendert,
+  //   seiten: [], zuLoeschen: [Seiten-IDs], inDb, lauf: Promise, wartet, geloescht }
+  let scan = null;
+  let zaehlerId = 0;
+  let letzteSicherung = Promise.resolve();
   let aktuell = 0; // Seite in der Großansicht (Index)
   let ersetzen = null; // Seite, die gerade neu aufgenommen wird (Index) oder null
   let fotoZiel = null; // was ein Foto der iPhone-Kamera bewirkt: 'neu' | 'anhaengen' | 'ersetzen'
@@ -21,6 +24,9 @@
     window.scrollTo(0, 0);
   }
   const seitenText = (n) => (n === 1 ? '1 Seite' : `${n} Seiten`);
+  const neueId = () => `${Date.now().toString(36)}-${(zaehlerId++).toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  const zwei = (z) => String(z).padStart(2, '0');
+  const datum = (ms) => { const d = new Date(ms); return `${zwei(d.getDate())}.${zwei(d.getMonth() + 1)}.${d.getFullYear()}`; };
 
   // ---------- Bildfunktionen ----------
 
@@ -145,13 +151,24 @@
   // quelle: etwas Zeichenbares (Canvas, Bild); original: Blob oder Promise auf Blob
   function seiteAnlegen(quelle, breite, hoehe, original) {
     const klein = verkleinert(quelle, breite, hoehe, VORSCHAU);
-    const seite = { id: naechsteId++, breite, hoehe, original: null, bilder: {}, laden: {} };
+    const seite = { id: neueId(), breite, hoehe, original: null, bilder: {}, laden: {}, fertig: false, inDb: false };
     seite.bereit = Promise.all([original, alsBlob(klein, 0.8)]).then(([o, v]) => {
       seite.original = o;
       seite.vorschauBlob = v;
       seite.bilder.farbe = URL.createObjectURL(v);
+      seite.fertig = true;
       return seite;
     });
+    return seite;
+  }
+
+  // Seite aus dem Speicher (schon fertig)
+  function seiteAusSpeicher(d) {
+    const seite = {
+      id: d.id, breite: d.breite, hoehe: d.hoehe, original: d.original, vorschauBlob: d.vorschau,
+      bilder: { farbe: URL.createObjectURL(d.vorschau) }, laden: {}, fertig: true, inDb: true,
+    };
+    seite.bereit = Promise.resolve(seite);
     return seite;
   }
 
@@ -178,26 +195,110 @@
     return seite.laden[modus];
   }
 
+  // Neue Seite in den Scan; gespeichert wird, sobald sie fertig ist
   function seiteEinfuegen(seite) {
-    if (ersetzen !== null && scan.seiten[ersetzen]) {
-      seiteFreigeben(scan.seiten[ersetzen]);
-      scan.seiten[ersetzen] = seite;
+    const s = scan;
+    if (ersetzen !== null && s.seiten[ersetzen]) {
+      const alt = s.seiten[ersetzen];
+      s.zuLoeschen.push(alt.id);
+      seiteFreigeben(alt);
+      s.seiten[ersetzen] = seite;
     } else {
-      scan.seiten.push(seite);
+      s.seiten.push(seite);
     }
+    seite.bereit.then(() => sichern(s), () => {});
   }
 
-  function seiteEntfernen(seite) {
-    const i = scan ? scan.seiten.indexOf(seite) : -1;
-    if (i >= 0) scan.seiten.splice(i, 1);
+  function seiteEntfernen(seite, s = scan) {
+    const i = s ? s.seiten.indexOf(seite) : -1;
+    if (i >= 0) s.seiten.splice(i, 1);
+    if (s) s.zuLoeschen.push(seite.id);
     seiteFreigeben(seite);
   }
 
-  function scanVerwerfen() {
+  function neuerScan(art) {
+    const jetzt = Date.now();
+    const d = new Date(jetzt);
+    return {
+      id: neueId(), art, kontrast: art === 'buch' ? 'dokument' : 'farbe',
+      name: `${art === 'buch' ? 'Buch' : 'Scan'} ${zwei(d.getDate())}.${zwei(d.getMonth() + 1)}. ${zwei(d.getHours())}:${zwei(d.getMinutes())}`,
+      angelegt: jetzt, geaendert: jetzt, seiten: [], zuLoeschen: [], inDb: false,
+    };
+  }
+
+  // Scan schließen (bleibt gespeichert) und zur Startseite
+  function scanSchliessen() {
     if (scan) scan.seiten.forEach(seiteFreigeben);
     scan = null;
     ersetzen = null;
+    grossLauf++;
+    rasterLauf++;
     zeige('ansicht-start');
+    listeAufbauen();
+  }
+
+  // ---------- Speichern ----------
+
+  // Speichert den Scan; läuft je Scan nur einmal gleichzeitig, Aufrufe dazwischen werden zusammengefasst
+  function sichern(s = scan) {
+    if (!s || s.geloescht) return Promise.resolve();
+    if (s.wartet) return s.lauf;
+    s.wartet = true;
+    s.lauf = (s.lauf || Promise.resolve()).then(() => { s.wartet = false; return sichernJetzt(s); });
+    letzteSicherung = s.lauf;
+    return s.lauf;
+  }
+
+  async function sichernJetzt(s) {
+    if (s.geloescht) return;
+    const neu = s.seiten.filter((p) => p.fertig && !p.inDb);
+    const bleiben = s.seiten.filter((p) => p.inDb || neu.includes(p));
+    const loeschen = s.zuLoeschen.splice(0);
+    if (!bleiben.length && !s.inDb) return; // leerer Scan: nichts speichern
+    s.geaendert = Date.now();
+    const eintrag = {
+      id: s.id, art: s.art, name: s.name, kontrast: s.kontrast, angelegt: s.angelegt, geaendert: s.geaendert,
+      seiten: bleiben.map((p) => p.id),
+      bytes: bleiben.reduce((summe, p) => summe + p.original.size + p.vorschauBlob.size, 0),
+    };
+    try {
+      Speicher.dauerhaftAnfragen();
+      await Speicher.sichern({
+        scan: eintrag,
+        neu: neu.map((p) => ({ id: p.id, breite: p.breite, hoehe: p.hoehe, original: p.original, vorschau: p.vorschauBlob })),
+        loeschen,
+      });
+      neu.forEach((p) => { p.inDb = true; });
+      s.inDb = bleiben.length > 0;
+    } catch (fehler) {
+      console.warn('Speichern:', fehler);
+      s.zuLoeschen.unshift(...loeschen);
+      if (fehler && fehler.name === 'QuotaExceededError' && neu.length) {
+        // Neue Seiten passen nicht mehr: wieder entfernen, Rest erneut speichern
+        neu.forEach((p) => seiteEntfernen(p, s));
+        zeigeHinweis('Speicher voll – Seite nicht gespeichert. Bitte alte Scans löschen.');
+        ansichtAktualisieren(s);
+        await sichernJetzt(s);
+      } else {
+        zeigeHinweis('Speichern fehlgeschlagen');
+      }
+    }
+  }
+
+  // Nach dem Entfernen von Seiten wegen vollem Speicher die sichtbare Ansicht anpassen
+  function ansichtAktualisieren(s) {
+    if (s !== scan) return;
+    if (!$('ansicht-kamera').hidden) {
+      zaehlerAktualisieren();
+      const letzte = s.seiten[s.seiten.length - 1];
+      if (letzte && letzte.bilder.farbe) $('letzte').src = letzte.bilder.farbe; else $('letzte').hidden = true;
+    } else if (!s.seiten.length) {
+      scanSchliessen();
+    } else if (!$('ansicht-uebersicht').hidden) {
+      zeigeUebersicht();
+    } else if (!$('ansicht-gross').hidden) {
+      zeigeGross();
+    }
   }
 
   // ---------- Live-Kamera (Buch / Dokument) ----------
@@ -311,7 +412,7 @@
   function kameraFertig() {
     kameraStoppen();
     if (ersetzen !== null) { ersetzen = null; zeigeGross(); return; }
-    if (!scan || scan.seiten.length === 0) { scanVerwerfen(); return; }
+    if (!scan || scan.seiten.length === 0) { scanSchliessen(); return; }
     zeigeUebersicht();
   }
 
@@ -354,8 +455,8 @@
       return;
     }
     if (ziel === 'neu') {
-      scanVerwerfen();
-      scan = { art: 'normal', kontrast: 'farbe', seiten: [] };
+      if (scan) scan.seiten.forEach(seiteFreigeben);
+      scan = neuerScan('normal');
     }
     if (!scan) return;
     ersetzen = ziel === 'ersetzen' ? fotoIndex : null;
@@ -366,7 +467,7 @@
   // ---------- Startseite ----------
 
   $('start-buch').addEventListener('click', () => {
-    scan = { art: 'buch', kontrast: 'dokument', seiten: [] };
+    scan = neuerScan('buch');
     ersetzen = null;
     kameraOeffnen();
   });
@@ -380,8 +481,9 @@
 
   function zeigeUebersicht() {
     zeige('ansicht-uebersicht');
-    $('ueb-art').textContent = ARTEN[scan.art];
-    $('ueb-anzahl').textContent = seitenText(scan.seiten.length);
+    $('ueb-name').textContent = scan.name;
+    const teil = (t) => { const e = document.createElement('span'); e.className = 'ganz'; e.textContent = t; return e; };
+    $('ueb-anzahl').replaceChildren(teil(ARTEN[scan.art]), ' · ', teil(seitenText(scan.seiten.length)));
     $('ueb-plus').textContent = scan.art === 'buch' ? '+ Seiten' : '+ Seite';
     document.querySelectorAll('[data-kontrast]').forEach((k) => {
       k.setAttribute('aria-pressed', String(k.dataset.kontrast === scan.kontrast));
@@ -423,6 +525,7 @@
     knopf.addEventListener('click', () => {
       if (!scan || scan.kontrast === knopf.dataset.kontrast) return;
       scan.kontrast = knopf.dataset.kontrast;
+      sichern();
       zeigeUebersicht();
     });
   });
@@ -432,8 +535,47 @@
     else fotoAufnehmen('anhaengen');
   });
 
-  $('ueb-schliessen').addEventListener('click', async () => {
-    if (await frage('Scan verwerfen? Die Seiten werden noch nicht gespeichert.', 'Verwerfen')) scanVerwerfen();
+  // Zurück zur Liste: alles ist schon gespeichert
+  $('ueb-zurueck').addEventListener('click', scanSchliessen);
+
+  // Umbenennen
+  const umbenennen = $('umbenennen');
+  const namensFeld = $('name-feld');
+  $('ueb-name').addEventListener('click', () => {
+    if (!scan) return;
+    namensFeld.value = scan.name;
+    $('name-sichern').disabled = false;
+    umbenennen.returnValue = '';
+    umbenennen.showModal();
+    namensFeld.select();
+  });
+  namensFeld.addEventListener('input', () => { $('name-sichern').disabled = !namensFeld.value.trim(); });
+  namensFeld.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    if (namensFeld.value.trim()) umbenennen.close('ja');
+  });
+  umbenennen.addEventListener('close', () => {
+    const name = namensFeld.value.trim().slice(0, 80);
+    if (umbenennen.returnValue !== 'ja' || !name || !scan) return;
+    scan.name = name;
+    $('ueb-name').textContent = name;
+    sichern();
+  });
+
+  // Ganzen Scan löschen
+  $('scan-loeschen').addEventListener('click', async () => {
+    const s = scan;
+    if (!s || !(await frage(`„${s.name}“ mit ${seitenText(s.seiten.length)} löschen?`, 'Löschen'))) return;
+    s.geloescht = true;
+    try { await s.lauf; } catch { /* egal, wird ohnehin gelöscht */ }
+    try {
+      await Speicher.scanLoeschen(s.id, [...s.seiten.map((p) => p.id), ...s.zuLoeschen]);
+    } catch (fehler) {
+      console.warn(fehler);
+      zeigeHinweis('Löschen fehlgeschlagen');
+    }
+    scanSchliessen();
   });
 
   // ---------- Großansicht ----------
@@ -441,7 +583,7 @@
   let grossLauf = 0;
 
   function zeigeGross() {
-    if (!scan || scan.seiten.length === 0) { scanVerwerfen(); return; }
+    if (!scan || scan.seiten.length === 0) { scanSchliessen(); return; }
     aktuell = Math.min(aktuell, scan.seiten.length - 1);
     zeige('ansicht-gross');
     const seite = scan.seiten[aktuell];
@@ -475,6 +617,7 @@
     if (ziel < 0 || ziel >= s.length) return;
     [s[aktuell], s[ziel]] = [s[ziel], s[aktuell]];
     aktuell = ziel;
+    sichern();
     zeigeGross();
   }
 
@@ -495,15 +638,85 @@
   $('gross-loeschen').addEventListener('click', async () => {
     if (!(await frage(`Seite ${aktuell + 1} löschen?`, 'Löschen'))) return;
     seiteEntfernen(scan.seiten[aktuell]);
-    if (scan.seiten.length === 0) { scanVerwerfen(); return; }
+    sichern();
+    if (scan.seiten.length === 0) { scanSchliessen(); return; }
     zeigeUebersicht();
   });
 
-  // Vor „Neu laden“ (Update) fragen, wenn ungespeicherte Seiten da sind (genutzt von app.js)
-  window.vorNeuLaden = async () => {
-    if (!scan || scan.seiten.length === 0) return true;
-    return frage('Jetzt neu laden? Die aufgenommenen Seiten werden noch nicht gespeichert und gehen verloren.', 'Neu laden');
-  };
+  // ---------- Startseite: Meine Scans ----------
+
+  let listenLauf = 0;
+  let listenUrls = [];
+
+  async function listeAufbauen() {
+    const lauf = ++listenLauf;
+    try { await letzteSicherung; } catch { /* Fehler wurde schon gemeldet */ }
+    let alle;
+    try {
+      alle = await Speicher.alleScans();
+    } catch (fehler) {
+      console.warn('Liste:', fehler);
+      alle = [];
+    }
+    if (lauf !== listenLauf) return;
+    alle.sort((a, b) => b.geaendert - a.geaendert);
+    listenUrls.forEach((u) => URL.revokeObjectURL(u));
+    listenUrls = [];
+
+    $('meine-leer').hidden = alle.length > 0;
+    const bytes = alle.reduce((summe, a) => summe + (a.bytes || 0), 0);
+    $('belegt').textContent = bytes < 1e6 ? 'Belegt: unter 1 MB' : `Belegt: ${Math.round(bytes / 1e6)} MB`;
+
+    const zeilen = alle.map((eintrag) => {
+      const zeile = document.createElement('button');
+      zeile.type = 'button';
+      zeile.className = 'scan-zeile';
+      const img = new Image();
+      img.alt = '';
+      const text = document.createElement('span');
+      text.className = 'scan-text';
+      const name = document.createElement('strong');
+      name.textContent = eintrag.name;
+      const art = document.createElement('span');
+      art.textContent = ARTEN[eintrag.art];
+      const info = document.createElement('span');
+      info.textContent = `${seitenText(eintrag.seiten.length)} · ${datum(eintrag.geaendert)}`;
+      text.append(name, art, info);
+      zeile.append(img, text);
+      zeile.addEventListener('click', () => scanOeffnen(eintrag.id));
+      return [eintrag, img, zeile];
+    });
+    $('meine-liste').replaceChildren(...zeilen.map((z) => z[2]));
+
+    for (const [eintrag, img] of zeilen) {
+      try {
+        const d = await Speicher.seiteLaden(eintrag.seiten[0]);
+        if (lauf !== listenLauf) return;
+        if (!d) continue;
+        const url = URL.createObjectURL(d.vorschau);
+        listenUrls.push(url);
+        img.src = url;
+      } catch { /* kein Vorschaubild */ }
+    }
+  }
+
+  async function scanOeffnen(id) {
+    let d;
+    try {
+      d = await Speicher.scanLaden(id);
+    } catch (fehler) {
+      console.warn(fehler);
+    }
+    if (!d) { zeigeHinweis('Scan konnte nicht geöffnet werden'); listeAufbauen(); return; }
+    scan = {
+      id: d.id, art: d.art, name: d.name, kontrast: d.kontrast, angelegt: d.angelegt, geaendert: d.geaendert,
+      seiten: d.seitenDaten.map(seiteAusSpeicher), zuLoeschen: [], inDb: true,
+    };
+    ersetzen = null;
+    zeigeUebersicht();
+  }
+
+  listeAufbauen();
 
   // ---------- Rückfrage ----------
 

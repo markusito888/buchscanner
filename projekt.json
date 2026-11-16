@@ -12,7 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/umsetzen F03 – Bibliothek bauen (Speichern in IndexedDB, Liste „Meine Scans“)"
+    "Version 0.3.0 hochladen und am iPhone testen",
+    "/qa F03"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -71,6 +72,10 @@
     {
       "datum": "2026-11-16",
       "text": "Spec F03 Bibliothek bestätigt: sofortiges Speichern pro Seite, Liste „Meine Scans“, Umbenennen, Löschen, Anzeige „Belegt“."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F03 Bibliothek gebaut (v0.3.0): jede Seite sofort gespeichert, Liste „Meine Scans“, Umbenennen, Scan löschen, „Belegt“."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
