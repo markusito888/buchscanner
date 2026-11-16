@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/spec F04 – normaler Scan als Bild (Fotos) oder PDF (Dateien) speichern"
+    "/umsetzen F04 – normaler Scan als PDF/Bilder über das Teilen-Menü"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -87,6 +87,10 @@
     {
       "datum": "2026-11-16",
       "text": "F03 Bibliothek abgenommen und fertig (v0.3.1)."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Spec F04 bestätigt: normaler Scan als PDF (A4) oder Bilder über das iOS-Teilen-Menü, gewählter Kontrast, max. 3000 px."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
