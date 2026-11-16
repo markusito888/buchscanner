@@ -13,7 +13,7 @@ Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange
 ## Akzeptanzkriterien
 **Buch / Dokument mit Text (Live-Kamera)**
 - [ ] AK1: Angenommen die Startseite ist offen, wenn man „Buch / Dokument mit Text“ antippt, dann öffnet sich innerhalb von 2 s ein Vollbild mit dem Live-Bild der hinteren Kamera, einem runden Auslöser (mindestens 72 px), einem Zähler „0 Seiten“ und dem Knopf „Fertig“. Beim allerersten Mal fragt iOS nach der Kamera-Erlaubnis.
-- [ ] AK2: Angenommen die Live-Kamera ist offen, wenn man den Auslöser antippt, dann blitzt das Bild kurz auf, der Zähler steigt um 1, unten erscheint ein kleines Vorschaubild der letzten Seite, und nach höchstens 1 s kann die nächste Seite ausgelöst werden.
+- [ ] AK2: Angenommen die Live-Kamera ist offen, wenn man den Auslöser antippt, dann gibt es eine deutliche Rückmeldung (Bild hellt kurz auf, die Ränder leuchten ca. 0,45 s weiß auf, der Zähler hüpft kurz grün), der Zähler steigt um 1, unten erscheint ein kleines Vorschaubild der letzten Seite, und nach höchstens 1 s kann die nächste Seite ausgelöst werden.
 - [ ] AK3: Die Seite wird in der höchsten Auflösung gespeichert, die Safari für das Kamerabild liefert. Angefragt wird 3840 × 2160, bei Hochformat also mindestens 1080 px Breite. Die tatsächliche Größe ist in der Großansicht ablesbar (z. B. „2160 × 3840“).
 - [ ] AK4: Angenommen die Kamera-Erlaubnis wurde abgelehnt oder die Kamera ist nicht verfügbar, dann erscheint statt des Kamerabilds der Text „Kein Zugriff auf die Kamera“ mit einer kurzen Anleitung: in den iPhone-Einstellungen unter Safari → Kamera auf „Erlauben“ stellen bzw. unter „Website-Einstellungen“. Dazu kommt der Knopf „Zurück“. Die App stürzt nicht ab.
 - [ ] AK5: Angenommen es wurden Seiten aufgenommen, wenn man „Fertig“ antippt, dann schaltet sich die Kamera ab (grüner Punkt oben verschwindet) und die Seitenübersicht öffnet sich. „Fertig“ bei 0 Seiten führt zurück zur Startseite.
@@ -61,6 +61,8 @@ Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange
 - Seiten ordnen → Pfeil-Knöpfe in der Großansicht, nicht Ziehen (2026-11-16).
 - Kontrast → 3 Stufen je Scan, das Original bleibt. Voreinstellung: Buch „Dokument“, normal „Farbe“ (2026-11-16).
 - Speichern → F02 nur im Arbeitsspeicher, F03 direkt danach (2026-11-16).
+- Rückmeldung beim Auslösen → deutlicher: Ränder leuchten auf, Zähler hüpft (Wunsch nach iPhone-Test, 2026-11-16).
+- Update-Hinweis → in der Live-Kamera ausgeblendet; „Neu laden“ fragt nach, solange ungespeicherte Seiten da sind (aus QA, 2026-11-16).
 
 ## Offene Fragen
 - Welche Auflösung liefert Safari auf deinem iPhone tatsächlich für das Live-Bild? Das klärt sich beim ersten Test (AK3). Liegt sie unter 1080 px Breite, prüfen wir, ob die Texterkennung damit reicht.

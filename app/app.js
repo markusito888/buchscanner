@@ -1,6 +1,6 @@
 // Buchscanner – Startseite, Hinweise, Offline-Betrieb und Update-Hinweis.
 // Versionsnummer auch in sw.js ändern (werkzeuge/version.sh macht beides).
-const VERSION = '0.2.0';
+const VERSION = '0.2.1';
 
 document.getElementById('version').textContent = VERSION;
 
@@ -35,8 +35,9 @@ if ('serviceWorker' in navigator) {
     });
   }
 
-  updateKnopf.addEventListener('click', () => {
+  updateKnopf.addEventListener('click', async () => {
     if (!wartend) return;
+    if (window.vorNeuLaden && !(await window.vorNeuLaden())) return;
     neuLadenGewuenscht = true;
     updateKnopf.disabled = true;
     wartend.postMessage('aktivieren');

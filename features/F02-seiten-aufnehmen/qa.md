@@ -44,3 +44,14 @@ Geprüft auf der Live-Adresse https://markusito888.github.io/buchscanner/ (Versi
 - Buch-Modus, eine Seite antippen: Welche Maße stehen oben (z. B. „2160 × 3840“)? (AK3)
 - Ein aufgeschlagenes Buch mit Schatten zum Rücken auf „Dokument“: Wie stark wird der Schatten schwarz? (Fehler 1)
 - 50 bis 100 Seiten am Stück aufnehmen: Bleibt alles flüssig, kein Neustart? Wird der Bildschirm dunkel? (AK17, offene Frage)
+
+---
+
+# Nachbesserung F02 – 2026-11-16 (Version 0.2.1)
+Gebaut mit `/umsetzen F02`, am Mac geprüft. Eine erneute `/qa F02` steht noch aus.
+
+- **AK17 bestätigt:** 103 Seiten am iPhone ohne Probleme (deine Rückmeldung).
+- **Wunsch Rückmeldung:** Beim Auslösen leuchten jetzt die Ränder 0,45 s weiß auf, und der Zähler hüpft kurz grün. Dazu kommt das bisherige kurze Aufhellen. AK2 ist in der Spec angepasst.
+- **Fehler 1 behoben (Schatten bei „Dokument“):** Testseite mit Randschatten: Papier in der Mitte 255, Rand 255, Ecke 255 (vorher 9), Schrift 0. Eine Buchseite mit starkem Schatten zum Rücken hin wird ebenfalls gleichmäßig weiß.
+- **Fehler 2 behoben (Update-Leiste):** In der Live-Kamera ist die Leiste ausgeblendet, der Auslöser ist frei. Hinweise erscheinen dort oben. „Neu laden“ fragt bei ungespeicherten Seiten: „Jetzt neu laden? Die aufgenommenen Seiten werden noch nicht gespeichert und gehen verloren.“ Bei „Abbrechen“ wird nicht neu geladen.
+- **Gegenprobe:** Der komplette F02-Test (100 Aufnahmen, Ordnen, Löschen, Ersetzen, normaler Scan, verweigerte Kamera, offline) läuft wieder durch. Keine Fremd-Anfragen, keine Konsolenfehler. Der Wechsel auf „Dokument“ bei 102 Seiten dauert 1,6 s.
