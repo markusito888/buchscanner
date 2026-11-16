@@ -4,7 +4,7 @@ Web-App fürs iPhone (wird auf den Home-Bildschirm gelegt): Dokumente und ganze 
 
 ## Technik
 - Reines HTML/CSS/JavaScript als PWA (Progressive Web App), kein Build-Schritt.
-- Texterkennung: Tesseract.js im Browser (Sprachen Deutsch, Englisch, Spanisch). PDF: eigener kleiner Erzeuger (`app/pdf.js`, nur Bilder, A4). Speicher: IndexedDB auf dem iPhone.
+- Texterkennung: Tesseract.js 7 im Browser, feste Kopie in `app/vendor/tesseract/` (Sprachen Deutsch, Englisch, Spanisch, Daten „best_int“, werden beim ersten Gebrauch geladen und vom Service Worker im Cache `texterkennung-7.0.0` behalten). PDF: eigener kleiner Erzeuger (`app/pdf.js`, nur Bilder, A4). Speicher: IndexedDB auf dem iPhone.
 - Speichern/Teilen über das Teilen-Menü von iOS (Web Share API): „Bild sichern“ → Fotos, „In Dateien sichern“, „Claude“.
 - Hosting: GitHub Pages (öffentliches Repo, nur Auslieferung der App, keine Daten auf dem Server). Nicht Netlify: die Credits gelten fürs ganze Konto und würden La Romantica gefährden. Die Kamera braucht https.
 - Starten (lokal): `cd app && python3 -m http.server 5190` → http://localhost:5190 · Testen auf dem iPhone: über die GitHub-Pages-Adresse.

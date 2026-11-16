@@ -11,7 +11,7 @@
 | F02 | Seiten aufnehmen: Kamera, Serienaufnahme, Seiten ordnen/löschen, Kontrast verbessern | P0 | fertig | Abgenommen 2026-11-16 (v0.2.1) · Nachbesserung v0.3.1: „Dokument“ erkennt hellen Text auf dunklem Grund (AK19, Prüfung mit F03) |
 | F03 | Bibliothek: Scans auf dem iPhone speichern, über mehrere Tage weiterscannen, umbenennen, löschen; Buch-Bilder nur vorübergehend | P0 | fertig | Abgenommen 2026-11-16 (v0.3.1) · Buch: dauerhaft nur der Text |
 | F04 | Normaler Scan speichern: als Bild (Fotos) oder PDF (Dateien) | P0 | fertig | Abgenommen 2026-11-16 (v0.4.0) |
-| F05 | Texterkennung: Deutsch/Englisch/Spanisch, im Hintergrund, Text pro Seite korrigierbar, schlechte Seiten markieren | P0 | spezifiziert | |
+| F05 | Texterkennung: Deutsch/Englisch/Spanisch, im Hintergrund, Text pro Seite korrigierbar, schlechte Seiten markieren | P0 | in-pruefung | |
 | F06 | Text-Export: .md (Claude/Claude Code) und EPUB (Kindle) über das Teilen-Menü, danach „Bilder löschen, Text behalten“; große Bücher in Teile | P0 | idee | Kein PDF für Buchtext · .md mit Hinweis an Claude: Lücken/[?Wort] sinngemäß ergänzen |
 | F07 | Automatische Seitenerkennung: Ränder finden, schräge Seiten gerade ziehen | P1 | idee | |
 | F08 | Doppelseiten teilen: aufgeschlagenes Buch, zwei Seiten in einem Foto | P1 | idee | |

@@ -335,12 +335,14 @@
     return {
       id: neueId(), art, kontrast: art === 'buch' ? 'dokument' : 'farbe',
       name: `${art === 'buch' ? 'Buch' : 'Scan'} ${zwei(d.getDate())}.${zwei(d.getMonth() + 1)}. ${zwei(d.getHours())}:${zwei(d.getMinutes())}`,
-      angelegt: jetzt, geaendert: jetzt, seiten: [], zuLoeschen: [], inDb: false,
+      angelegt: jetzt, geaendert: jetzt, seiten: [], zuLoeschen: [], inDb: false, sprache: 'deu',
     };
   }
 
   // Scan schließen (bleibt gespeichert) und zur Startseite
   function scanSchliessen() {
+    textSichern();
+    Texterkennung.vorrangSetzen(null);
     if (scan) scan.seiten.forEach(seiteFreigeben);
     scan = null;
     ersetzen = null;
@@ -371,6 +373,7 @@
     s.geaendert = Date.now();
     const eintrag = {
       id: s.id, art: s.art, name: s.name, kontrast: s.kontrast, angelegt: s.angelegt, geaendert: s.geaendert,
+      sprache: s.sprache || 'deu',
       seiten: bleiben.map((p) => p.id),
       bytes: bleiben.reduce((summe, p) => summe + p.original.size + p.vorschauBlob.size, 0),
     };
@@ -424,6 +427,8 @@
 
   function kameraOeffnen() {
     rasterLauf++; // Vorschaubilder der Übersicht nicht weiterrechnen, Auslöser bleibt frei
+    textSichern();
+    Texterkennung.kamera(true); // Texterkennung pausiert, solange die Kamera offen ist
     zeige('ansicht-kamera');
     $('kamera-fertig').textContent = ersetzen !== null ? 'Abbrechen' : 'Fertig';
     zaehlerAktualisieren();
@@ -516,6 +521,7 @@
 
     if (warErsetzen) {
       kameraStoppen();
+      Texterkennung.kamera(false);
       ersetzen = null;
       zeigeGross();
     } else {
@@ -525,6 +531,7 @@
 
   function kameraFertig() {
     kameraStoppen();
+    Texterkennung.kamera(false);
     if (ersetzen !== null) { ersetzen = null; zeigeGross(); return; }
     if (!scan || scan.seiten.length === 0) { scanSchliessen(); return; }
     zeigeUebersicht();
@@ -583,6 +590,7 @@
   $('start-buch').addEventListener('click', () => {
     scan = neuerScan('buch');
     ersetzen = null;
+    Texterkennung.vorrangSetzen(scan.id);
     kameraOeffnen();
   });
 
@@ -603,6 +611,13 @@
     document.querySelectorAll('[data-kontrast]').forEach((k) => {
       k.setAttribute('aria-pressed', String(k.dataset.kontrast === scan.kontrast));
     });
+    const buch = scan.art === 'buch';
+    $('sprache-wahl').hidden = !buch;
+    $('ocr-zeile').hidden = !buch;
+    document.querySelectorAll('[data-sprache]').forEach((k) => {
+      k.setAttribute('aria-pressed', String(k.dataset.sprache === scan.sprache));
+    });
+    textStatusZeigen();
     rasterAufbauen();
   }
 
@@ -622,6 +637,7 @@
       nr.className = 'kachel-nr';
       nr.textContent = String(i + 1);
       kachel.append(img, nr);
+      if (scan.art === 'buch' && unsicher(seite)) kachel.append(warnZeichen());
       kachel.addEventListener('click', () => { aktuell = i; zeigeGross(); });
       return [seite, img, kachel];
     });
@@ -699,6 +715,7 @@
   let grossLauf = 0;
 
   function zeigeGross() {
+    textSichern();
     if (!scan || scan.seiten.length === 0) { scanSchliessen(); return; }
     aktuell = Math.min(aktuell, scan.seiten.length - 1);
     rasterLauf++;
@@ -709,6 +726,8 @@
     $('gross-vor').disabled = aktuell === 0;
     $('gross-nach').disabled = aktuell === scan.seiten.length - 1;
     $('gross-sichern').hidden = scan.art !== 'normal';
+    grossModusZeigen();
+    textFeldFuellen(seite);
     zeichneGross(seite);
   }
 
@@ -739,7 +758,7 @@
     zeigeGross();
   }
 
-  $('gross-zurueck').addEventListener('click', () => { grossLauf++; zeigeUebersicht(); });
+  $('gross-zurueck').addEventListener('click', () => { textSichern(); grossLauf++; zeigeUebersicht(); });
   $('gross-vor').addEventListener('click', () => tausche(aktuell - 1));
   $('gross-nach').addEventListener('click', () => tausche(aktuell + 1));
 
@@ -755,6 +774,7 @@
 
   $('gross-loeschen').addEventListener('click', async () => {
     if (!(await frage(`Seite ${aktuell + 1} löschen?`, 'Löschen'))) return;
+    textGeaendert = false; // Text der gelöschten Seite nicht mehr speichern
     seiteEntfernen(scan.seiten[aktuell]);
     sichern();
     if (scan.seiten.length === 0) { scanSchliessen(); return; }
@@ -880,11 +900,13 @@
     const lauf = ++listenLauf;
     try { await letzteSicherung; } catch { /* Fehler wurde schon gemeldet */ }
     let alle;
+    let texte = new Map();
     try {
       alle = await Speicher.alleScans();
+      texte = new Map((await Speicher.alleTexte()).map((t) => [t.id, t]));
     } catch (fehler) {
       console.warn('Liste:', fehler);
-      alle = [];
+      alle = alle || [];
     }
     if (lauf !== listenLauf) return;
     alle.sort((a, b) => b.geaendert - a.geaendert);
@@ -892,7 +914,8 @@
     listenUrls = [];
 
     $('meine-leer').hidden = alle.length > 0;
-    const bytes = alle.reduce((summe, a) => summe + (a.bytes || 0), 0);
+    let bytes = alle.reduce((summe, a) => summe + (a.bytes || 0), 0);
+    texte.forEach((t) => { bytes += (t.text || '').length; });
     $('belegt').textContent = bytes < 1e6 ? 'Belegt: unter 1 MB' : `Belegt: ${Math.round(bytes / 1e6)} MB`;
 
     const zeilen = alle.map((eintrag) => {
@@ -910,6 +933,16 @@
       const info = document.createElement('span');
       info.textContent = `${seitenText(eintrag.seiten.length)} · ${datum(eintrag.geaendert)}`;
       text.append(name, art, info);
+      if (eintrag.art === 'buch') {
+        const sprache = eintrag.sprache || 'deu';
+        const fertig = eintrag.seiten.filter((id) => { const t = texte.get(id); return t && (t.vonHand || t.sprache === sprache); }).length;
+        if (fertig < eintrag.seiten.length) {
+          const ocr = document.createElement('span');
+          ocr.className = 'scan-ocr';
+          ocr.textContent = `Text: ${fertig} von ${eintrag.seiten.length}`;
+          text.append(ocr);
+        }
+      }
       zeile.append(img, text);
       zeile.addEventListener('click', () => scanOeffnen(eintrag.id));
       return [eintrag, img, zeile];
@@ -936,13 +969,173 @@
       console.warn(fehler);
     }
     if (!d) { zeigeHinweis('Scan konnte nicht geöffnet werden'); listeAufbauen(); return; }
+    let texte = new Map();
+    try { texte = await Speicher.texteLaden(d.seiten); } catch (fehler) { console.warn(fehler); }
     scan = {
       id: d.id, art: d.art, name: d.name, kontrast: d.kontrast, angelegt: d.angelegt, geaendert: d.geaendert,
+      sprache: d.sprache || 'deu',
       seiten: d.seitenDaten.map(seiteAusSpeicher), zuLoeschen: [], inDb: true,
     };
+    scan.seiten.forEach((p) => { p.textEintrag = texte.get(p.id) || null; });
     ersetzen = null;
+    if (scan.art === 'buch') Texterkennung.vorrangSetzen(scan.id);
     zeigeUebersicht();
   }
+
+  // ---------- Texterkennung (F05) ----------
+
+  const OCR_MAX = 2400; // lange Seite des Bildes für die Erkennung
+  let ocrStatus = { art: 'ruhe' };
+  let textSeite = null; // Seite, deren Text gerade im Textfeld steht
+  let textGeaendert = false;
+  let textTimer = null;
+  let listeTimer = null;
+
+  // Text gilt für die aktuelle Sprache (oder wurde von Hand geschrieben)
+  const textFertig = (seite) => {
+    const t = seite.textEintrag;
+    return Boolean(t && (t.vonHand || t.sprache === scan.sprache));
+  };
+  // Unsicher: wenig Sicherheit oder kein Text; von Hand korrigierte Seiten gelten als geprüft
+  function unsicher(seite) {
+    const t = seite.textEintrag;
+    return Boolean(t && !t.vonHand && t.sprache === scan.sprache && (t.sicherheit < 60 || !t.text.trim()));
+  }
+  function warnZeichen() {
+    const w = document.createElement('span');
+    w.className = 'kachel-warn';
+    w.textContent = '!';
+    w.setAttribute('aria-label', 'Text unsicher');
+    return w;
+  }
+
+  function textStatusZeigen() {
+    if (!scan || scan.art !== 'buch') return;
+    const gesamt = scan.seiten.length;
+    const fertig = scan.seiten.filter(textFertig).length;
+    const sprache = Texterkennung.SPRACHEN[scan.sprache];
+    let t;
+    if (fertig >= gesamt) t = gesamt === 1 ? 'Text: Seite erkannt' : `Text: alle ${gesamt} Seiten erkannt`;
+    else if (ocrStatus.scanId === scan.id && ocrStatus.art === 'lade') t = 'Sprachdaten werden geladen (einmalig) …';
+    else if (ocrStatus.scanId === scan.id && ocrStatus.art === 'offline') t = `Für ${sprache} einmal Internet nötig`;
+    else t = `Text: ${fertig} von ${seitenText(gesamt)}`;
+    $('ocr-status').textContent = t;
+    const unsichere = scan.seiten.filter(unsicher).length;
+    $('ocr-unsicher').hidden = unsichere === 0;
+    $('ocr-unsicher').textContent = unsichere === 1 ? '1 Seite unsicher' : `${unsichere} Seiten unsicher`;
+  }
+
+  $('ocr-unsicher').addEventListener('click', () => {
+    const i = scan ? scan.seiten.findIndex(unsicher) : -1;
+    if (i < 0) return;
+    aktuell = i;
+    zeigeGross();
+  });
+
+  // Sprache wechseln: alle Seiten neu erkennen (Rückfrage, wenn es Handkorrekturen gibt)
+  document.querySelectorAll('[data-sprache]').forEach((knopf) => {
+    knopf.addEventListener('click', async () => {
+      const s = scan;
+      const neu = knopf.dataset.sprache;
+      if (!s || s.sprache === neu) return;
+      if (s.seiten.some((p) => p.textEintrag && p.textEintrag.vonHand)
+        && !(await frage('Text aller Seiten neu erkennen? Deine Korrekturen gehen verloren.', 'Neu erkennen'))) return;
+      s.sprache = neu;
+      s.seiten.forEach((p) => { p.textEintrag = null; });
+      try { await Speicher.texteLoeschen(s.seiten.map((p) => p.id)); } catch (fehler) { console.warn(fehler); }
+      await sichern(s);
+      if (scan === s) zeigeUebersicht();
+      Texterkennung.anstossen();
+    });
+  });
+
+  // Großansicht: Bild | Text | Beides (gemerkt)
+  const MODI = ['bild', 'text', 'beides'];
+  function grossModus() {
+    try { const m = localStorage.getItem('grossModus'); if (MODI.includes(m)) return m; } catch { /* ohne Speicher */ }
+    return 'bild';
+  }
+  function grossModusZeigen() {
+    const buch = scan && scan.art === 'buch';
+    const modus = buch ? grossModus() : 'bild';
+    $('gross-modus').hidden = !buch;
+    MODI.forEach((m) => $('ansicht-gross').classList.toggle(`modus-${m}`, m === modus));
+    document.querySelectorAll('[data-modus]').forEach((k) => k.setAttribute('aria-pressed', String(k.dataset.modus === modus)));
+  }
+  document.querySelectorAll('[data-modus]').forEach((knopf) => {
+    knopf.addEventListener('click', () => {
+      textSichern();
+      try { localStorage.setItem('grossModus', knopf.dataset.modus); } catch { /* ohne Speicher */ }
+      grossModusZeigen();
+    });
+  });
+
+  function textFeldFuellen(seite) {
+    textSeite = seite;
+    textGeaendert = false;
+    const da = scan.art === 'buch' && textFertig(seite);
+    $('gross-text-wartet').hidden = da;
+    $('gross-text').hidden = !da;
+    $('gross-text').value = da ? seite.textEintrag.text : '';
+    $('gross-text').scrollTop = 0;
+  }
+
+  // Korrektur speichern (1 s nach dem letzten Tippen und beim Verlassen der Seite)
+  function textSichern() {
+    clearTimeout(textTimer);
+    if (!textGeaendert || !textSeite || !scan) return;
+    textGeaendert = false;
+    const alt = textSeite.textEintrag;
+    const eintrag = { id: textSeite.id, text: $('gross-text').value, sicherheit: alt ? alt.sicherheit : 0, vonHand: true, sprache: scan.sprache };
+    textSeite.textEintrag = eintrag;
+    Speicher.textSetzen(eintrag).catch((fehler) => { console.warn(fehler); zeigeHinweis('Text konnte nicht gespeichert werden'); });
+  }
+  $('gross-text').addEventListener('input', () => {
+    textGeaendert = true;
+    clearTimeout(textTimer);
+    textTimer = setTimeout(textSichern, 1000);
+  });
+  $('gross-text').addEventListener('blur', textSichern);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') textSichern(); });
+
+  // Bild für die Erkennung: Fassung „Dokument“, lange Seite höchstens 2400 px
+  async function ocrBild(original) {
+    const img = await ladeBild(original);
+    const f = Math.min(1, OCR_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = neuesCanvas(Math.max(1, Math.round(img.naturalWidth * f)), Math.max(1, Math.round(img.naturalHeight * f)));
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    filtere(ctx, c.width, c.height, 'dokument');
+    return c;
+  }
+
+  Texterkennung.einrichten({
+    vorbereiten: ocrBild,
+    melden: (st) => {
+      ocrStatus = st;
+      if (scan && !$('ansicht-uebersicht').hidden) textStatusZeigen();
+    },
+    gespeichert: (scanId, eintrag) => {
+      if (scan && scan.id === scanId) {
+        const i = scan.seiten.findIndex((p) => p.id === eintrag.id);
+        if (i < 0) return;
+        const seite = scan.seiten[i];
+        seite.textEintrag = eintrag;
+        if (!$('ansicht-uebersicht').hidden) {
+          textStatusZeigen();
+          const kachel = $('raster').children[i];
+          if (kachel) {
+            kachel.querySelectorAll('.kachel-warn').forEach((w) => w.remove());
+            if (unsicher(seite)) kachel.append(warnZeichen());
+          }
+        }
+        if (!$('ansicht-gross').hidden && textSeite === seite && !textGeaendert && document.activeElement !== $('gross-text')) textFeldFuellen(seite);
+      } else if (!scan && !$('ansicht-start').hidden) {
+        clearTimeout(listeTimer);
+        listeTimer = setTimeout(listeAufbauen, 1500);
+      }
+    },
+  });
 
   listeAufbauen();
 

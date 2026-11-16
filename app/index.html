@@ -89,6 +89,15 @@
         <button type="button" data-kontrast="grau">Grau</button>
         <button type="button" data-kontrast="dokument">Dokument</button>
       </div>
+      <div id="sprache-wahl" class="segment sprache-wahl" role="group" aria-label="Sprache des Buchs">
+        <button type="button" data-sprache="deu">Deutsch</button>
+        <button type="button" data-sprache="eng">Englisch</button>
+        <button type="button" data-sprache="spa">Spanisch</button>
+      </div>
+      <div id="ocr-zeile" class="ocr-zeile">
+        <span id="ocr-status" role="status"></span>
+        <button id="ocr-unsicher" class="ocr-unsicher" type="button" hidden></button>
+      </div>
       <div id="raster" class="raster"></div>
       <button id="scan-loeschen" class="knopf-klein knopf-gefahr scan-loeschen" type="button">Scan löschen</button>
     </div>
@@ -110,8 +119,17 @@
       </div>
       <span class="text-knopf platzhalter" aria-hidden="true"></span>
     </header>
+    <div id="gross-modus" class="segment gross-modus" role="group" aria-label="Ansicht">
+      <button type="button" data-modus="bild">Bild</button>
+      <button type="button" data-modus="text">Text</button>
+      <button type="button" data-modus="beides">Beides</button>
+    </div>
     <div class="gross-bild">
       <canvas id="gross-canvas" width="1" height="1"></canvas>
+    </div>
+    <div id="gross-textbereich" class="gross-textbereich">
+      <p id="gross-text-wartet" class="gross-text-wartet">Text wird noch erkannt …</p>
+      <textarea id="gross-text" class="gross-text" aria-label="Text der Seite" spellcheck="false" autocapitalize="sentences"></textarea>
     </div>
     <div class="gross-knoepfe">
       <button id="gross-vor" class="knopf-klein" type="button">‹ Nach vorne</button>
@@ -179,6 +197,7 @@
   <script src="app.js"></script>
   <script src="speicher.js"></script>
   <script src="pdf.js"></script>
+  <script src="texterkennung.js"></script>
   <script src="scan.js"></script>
 </body>
 </html>

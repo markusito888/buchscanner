@@ -12,7 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/umsetzen F05 – Texterkennung (Tesseract.js, Sprachdaten von eigener Adresse)"
+    "Version 0.5.0 hochladen und am iPhone mit echten Buchseiten testen (Tempo, Qualität)",
+    "/qa F05"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -111,6 +112,10 @@
     {
       "datum": "2026-11-16",
       "text": "Spec F05 Texterkennung bestätigt: automatisch nach „Fertig“, Deutsch/Englisch/Spanisch, Bild|Text|Beides, unsichere Wörter als [?Wort] für Claude."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F05 Texterkennung gebaut (v0.5.0): Tesseract.js lokal, automatisch nach „Fertig“, Bild|Text|Beides, unsichere Seiten, [?Wort]; Testseite 0–2 % Fehler, ca. 5 s/Seite am Mac."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
