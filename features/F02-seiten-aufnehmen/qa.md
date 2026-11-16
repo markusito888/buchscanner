@@ -55,3 +55,32 @@ Gebaut mit `/umsetzen F02`, am Mac geprüft. Eine erneute `/qa F02` steht noch a
 - **Fehler 1 behoben (Schatten bei „Dokument“):** Testseite mit Randschatten: Papier in der Mitte 255, Rand 255, Ecke 255 (vorher 9), Schrift 0. Eine Buchseite mit starkem Schatten zum Rücken hin wird ebenfalls gleichmäßig weiß.
 - **Fehler 2 behoben (Update-Leiste):** In der Live-Kamera ist die Leiste ausgeblendet, der Auslöser ist frei. Hinweise erscheinen dort oben. „Neu laden“ fragt bei ungespeicherten Seiten: „Jetzt neu laden? Die aufgenommenen Seiten werden noch nicht gespeichert und gehen verloren.“ Bei „Abbrechen“ wird nicht neu geladen.
 - **Gegenprobe:** Der komplette F02-Test (100 Aufnahmen, Ordnen, Löschen, Ersetzen, normaler Scan, verweigerte Kamera, offline) läuft wieder durch. Keine Fremd-Anfragen, keine Konsolenfehler. Der Wechsel auf „Dokument“ bei 102 Seiten dauert 1,6 s.
+
+---
+
+# QA F02 (erneut) – 2026-11-16 · Version 0.2.1
+**Urteil:** fertig
+**Ergebnis:** 18 von 18 AK bestanden · 0 Fehler
+
+Geprüft auf der Live-Adresse (Version 0.2.1) mit denselben Tests wie bei der ersten QA, dazu Zusatztests für die Nachbesserung. Die iPhone-Werte stammen von dir.
+
+## Akzeptanzkriterien (nur Änderungen gegenüber der ersten QA)
+- ✅ AK2 – Neue Rückmeldung geprüft: Beim Auslösen laufen Aufhellen, Ränder-Leuchten (Deckkraft gemessen 0,69 nach 120 ms) und das Hüpfen des Zählers. Siehe Screenshot: weißer Rand rundum, Zähler grün. Der Auslöser war bei 100 Aufnahmen jedes Mal nach höchstens 0,43 s wieder frei.
+- ✅ AK3 – Am iPhone liefert die Live-Kamera **2160 × 3840** im Hochformat (deine Angabe). Das ist deutlich mehr als die geforderte Mindestbreite von 1080 px.
+- ✅ AK15 – Papierseite mit Randschatten auf „Dokument“: Papier in der Mitte, am Rand und in der Ecke 255, Schrift 0 (vorher Ecke 9). Eine Buchseite mit starkem Schatten zum Rücken hin wird gleichmäßig weiß. Der Wechsel auf „Dokument“ bei 102 Seiten dauert 1,6 s, auf „Grau“ 1,7 s, auf „Farbe“ unter 0,1 s.
+- ✅ AK17 – 103 Seiten am iPhone ohne Probleme (deine Angabe), 100 Seiten in Chrome ohne Verlangsamung.
+- ✅ AK18 – In der Live-Kamera ist die Update-Leiste ausgeblendet, der Auslöser ist frei (Treffer in seiner Mitte landet beim Auslöser). Hinweise erscheinen dort oben (60 px vom oberen Rand). Offline funktioniert, keine Fremd-Anfragen, keine Konsolenfehler.
+- AK1, AK4–AK14, AK16: unverändert bestanden (alle Tests liefen erneut durch).
+
+## Fehler
+Keine. Fehler 1 und 2 der ersten QA sind behoben.
+
+## Weitere Beobachtungen
+- „Neu laden“ fragt bei ungespeicherten Seiten: „Jetzt neu laden? Die aufgenommenen Seiten werden noch nicht gespeichert und gehen verloren.“ Bei „Abbrechen“ lädt die App nicht neu.
+- F01 läuft weiter: Startseite hell/dunkel, Offline-Start, Version 0.2.1 sichtbar.
+- Weiter offen (aus der Spec): Ob der Bildschirm bei langen Aufnahmen dunkel wird. Bei 103 Seiten hast du nichts gemeldet, deshalb kein Wake Lock.
+- „Dokument“ macht große dunkle Flächen (Fotos im Buch, Tisch im Bild) hell und fleckig. Das ist so gewollt, sauber wird es erst mit dem Zuschneiden in F07.
+
+## Was du selbst kurz testen solltest
+- Eine Buchseite mit Bild darauf auf „Dokument“ ansehen: Ist das für dich in Ordnung oder störend?
+- Einen normalen Scan (Vertrag, Brief) mit „Farbe“ und „Dokument“ vergleichen.
