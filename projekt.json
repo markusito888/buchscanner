@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/spec F05 – Texterkennung (Deutsch/Englisch/Spanisch, Text pro Seite korrigierbar)"
+    "/umsetzen F05 – Texterkennung (Tesseract.js, Sprachdaten von eigener Adresse)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -107,6 +107,10 @@
     {
       "datum": "2026-11-16",
       "text": "F04 Normaler Scan speichern abgenommen und fertig (v0.4.0)."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Spec F05 Texterkennung bestätigt: automatisch nach „Fertig“, Deutsch/Englisch/Spanisch, Bild|Text|Beides, unsichere Wörter als [?Wort] für Claude."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
