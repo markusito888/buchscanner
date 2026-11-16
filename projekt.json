@@ -12,8 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F04 abnehmen (PDF in Dateien, Bilder in Fotos am iPhone)",
-    "Danach /spec F05 – Texterkennung"
+    "/spec F05 – Texterkennung (Deutsch/Englisch/Spanisch, Text pro Seite korrigierbar)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -104,6 +103,10 @@
     {
       "datum": "2026-11-16",
       "text": "F04: Tempo am iPhone ok, QA damit 12 von 12 AK."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F04 Normaler Scan speichern abgenommen und fertig (v0.4.0)."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

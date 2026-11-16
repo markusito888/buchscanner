@@ -1,5 +1,5 @@
 # F04 Normaler Scan speichern
-**Status:** spezifiziert · **Stufe:** light · **Abhängig von:** F02, F03
+**Status:** fertig · **Stufe:** light · **Abhängig von:** F02, F03
 
 ## Ziel
 Ein normaler Scan lässt sich als Bild in Fotos oder als PDF in Dateien speichern, und zwar über das Teilen-Menü von iOS. Darüber geht er auch direkt an Mail, AirDrop oder die Claude-App. Gespeichert wird die gewählte Kontrast-Stufe in guter, kompakter Qualität.
@@ -10,22 +10,22 @@ Ein normaler Scan lässt sich als Bild in Fotos oder als PDF in Dateien speicher
 
 ## Akzeptanzkriterien
 **Knöpfe**
-- [ ] AK1: Angenommen die Übersicht eines normalen Scans ist offen, dann steht in der Fußleiste neben „+ Seite“ ein Knopf „Speichern“ (beide mindestens 52 px hoch, nebeneinander bei 375 px). Ein Tipp öffnet eine Auswahl mit „Als PDF (Dateien)“, „Als Bilder (Fotos)“ und „Abbrechen“. Bei Buch-Scans gibt es diesen Knopf nicht.
-- [ ] AK2: Angenommen die Großansicht einer Seite eines normalen Scans ist offen, dann gibt es zusätzlich den Knopf „Seite als Bild sichern“ (mindestens 48 px). Er speichert nur diese eine Seite.
+- [x] AK1: Angenommen die Übersicht eines normalen Scans ist offen, dann steht in der Fußleiste neben „+ Seite“ ein Knopf „Speichern“ (beide mindestens 52 px hoch, nebeneinander bei 375 px). Ein Tipp öffnet eine Auswahl mit „Als PDF (Dateien)“, „Als Bilder (Fotos)“ und „Abbrechen“. Bei Buch-Scans gibt es diesen Knopf nicht.
+- [x] AK2: Angenommen die Großansicht einer Seite eines normalen Scans ist offen, dann gibt es zusätzlich den Knopf „Seite als Bild sichern“ (mindestens 48 px). Er speichert nur diese eine Seite.
 
 **Erzeugen und Teilen**
-- [ ] AK3: Nach der Wahl erscheint „Wird erstellt … Seite X von Y“ mit dem Knopf „Abbrechen“. Sind die Dateien fertig, wird daraus „Fertig – Teilen“. Ein Tipp darauf öffnet das iOS-Teilen-Menü. (Zwei Schritte sind nötig, weil Safari das Teilen-Menü nur direkt nach einem Tipp öffnet und das Erzeugen länger dauern kann.)
-- [ ] AK4: Das PDF hat je Scan-Seite eine A4-Seite, hoch oder quer passend zum Foto. Das Bild ist ohne Verzerrung eingepasst und zentriert, Rest weiß. Die Reihenfolge entspricht der Übersicht. Der Dateiname lautet „<Name des Scans>.pdf“ (Zeichen wie „/“ und „:“ werden zu „-“), der Titel im PDF ist der Name des Scans.
-- [ ] AK5: Bilder sind JPEG-Dateien mit dem Namen „<Name> – Seite N.jpg“ (bei einer einzelnen Seite „<Name> – Seite N.jpg“ mit ihrer Nummer). Im Teilen-Menü erscheint „Bild sichern“ bzw. „N Bilder sichern“, und danach sind sie in Fotos.
-- [ ] AK6: Gespeichert wird die gerade gewählte Kontrast-Stufe (Farbe, Grau oder Dokument), mit demselben Aussehen wie in der Großansicht. Die lange Seite hat höchstens 3000 px (kleinere Fotos werden nicht vergrößert), JPEG-Qualität 0,85. Eine typische Seite (12-MP-Foto) ist zwischen 0,3 und 2 MB groß.
-- [ ] AK7: Die Dateien enthalten keine Standortdaten oder andere Foto-Metadaten (EXIF) des Originals.
-- [ ] AK8: Bricht man das Teilen-Menü ab oder tippt „Abbrechen“ während des Erzeugens, passiert nichts weiter: kein Fehler, der Scan bleibt unverändert, man ist wieder in der Übersicht bzw. Großansicht.
-- [ ] AK9: Nach dem Speichern bleibt der Scan unverändert in „Meine Scans“. Gelöscht wird nur mit „Scan löschen“ (F03).
+- [x] AK3: Nach der Wahl erscheint „Wird erstellt … Seite X von Y“ mit dem Knopf „Abbrechen“. Sind die Dateien fertig, wird daraus „Fertig – Teilen“. Ein Tipp darauf öffnet das iOS-Teilen-Menü. (Zwei Schritte sind nötig, weil Safari das Teilen-Menü nur direkt nach einem Tipp öffnet und das Erzeugen länger dauern kann.)
+- [x] AK4: Das PDF hat je Scan-Seite eine A4-Seite, hoch oder quer passend zum Foto. Das Bild ist ohne Verzerrung eingepasst und zentriert, Rest weiß. Die Reihenfolge entspricht der Übersicht. Der Dateiname lautet „<Name des Scans>.pdf“ (Zeichen wie „/“ und „:“ werden zu „-“), der Titel im PDF ist der Name des Scans.
+- [x] AK5: Bilder sind JPEG-Dateien mit dem Namen „<Name> – Seite N.jpg“ (bei einer einzelnen Seite „<Name> – Seite N.jpg“ mit ihrer Nummer). Im Teilen-Menü erscheint „Bild sichern“ bzw. „N Bilder sichern“, und danach sind sie in Fotos.
+- [x] AK6: Gespeichert wird die gerade gewählte Kontrast-Stufe (Farbe, Grau oder Dokument), mit demselben Aussehen wie in der Großansicht. Die lange Seite hat höchstens 3000 px (kleinere Fotos werden nicht vergrößert), JPEG-Qualität 0,85. Eine typische Seite (12-MP-Foto) ist zwischen 0,3 und 2 MB groß.
+- [x] AK7: Die Dateien enthalten keine Standortdaten oder andere Foto-Metadaten (EXIF) des Originals.
+- [x] AK8: Bricht man das Teilen-Menü ab oder tippt „Abbrechen“ während des Erzeugens, passiert nichts weiter: kein Fehler, der Scan bleibt unverändert, man ist wieder in der Übersicht bzw. Großansicht.
+- [x] AK9: Nach dem Speichern bleibt der Scan unverändert in „Meine Scans“. Gelöscht wird nur mit „Scan löschen“ (F03).
 
 **Robustheit**
-- [ ] AK10: Kann der Browser keine Dateien teilen (z. B. Chrome am Mac), werden die Dateien stattdessen heruntergeladen. Schlägt das Erzeugen fehl (z. B. zu wenig Arbeitsspeicher), erscheint „Speichern fehlgeschlagen – bitte noch einmal versuchen“, und die App läuft weiter.
-- [ ] AK11: Ein Scan mit 10 Seiten wird am Mac (Chrome) in höchstens 10 s als PDF erzeugt, auch in „Dokument“. Während des Erzeugens bleibt die Anzeige bedienbar (Fortschritt zählt hoch, „Abbrechen“ wirkt).
-- [ ] AK12: Alles läuft offline und ohne Anfragen an fremde Server. Die Dateien entstehen nur auf dem iPhone. Es gibt keinen waagerechten Bildlauf bei 375 px, hell und dunkel sind ok.
+- [x] AK10: Kann der Browser keine Dateien teilen (z. B. Chrome am Mac), werden die Dateien stattdessen heruntergeladen. Schlägt das Erzeugen fehl (z. B. zu wenig Arbeitsspeicher), erscheint „Speichern fehlgeschlagen – bitte noch einmal versuchen“, und die App läuft weiter.
+- [x] AK11: Ein Scan mit 10 Seiten wird am Mac (Chrome) in höchstens 10 s als PDF erzeugt, auch in „Dokument“. Während des Erzeugens bleibt die Anzeige bedienbar (Fortschritt zählt hoch, „Abbrechen“ wirkt).
+- [x] AK12: Alles läuft offline und ohne Anfragen an fremde Server. Die Dateien entstehen nur auf dem iPhone. Es gibt keinen waagerechten Bildlauf bei 375 px, hell und dunkel sind ok.
 
 ## Nicht im Umfang
 - Speichern oder PDF für Buch-Scans (dort zählt der Text: Export als .md und EPUB mit F06).

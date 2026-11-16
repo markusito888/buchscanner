@@ -75,3 +75,6 @@ Es gibt zwei Möglichkeiten. Entweder wird mit `/umsetzen F04` das Tempo verbess
 ## Nachtrag 2026-11-16: iPhone-Test
 **Urteil:** fertig · **Ergebnis:** 12 von 12 AK bestanden · 0 Fehler offen
 - ✅ AK11 – Der Nutzer hat am iPhone gemessen: Die Geschwindigkeit beim Speichern als PDF ist in Ordnung. AK11 gilt damit als erfüllt, wie im Bericht oben vorgeschlagen. Der Fehler 1 (Tempo am Mac) ist damit erledigt, ohne Änderung am Code.
+
+## Abnahme
+- 2026-11-16: Vom Nutzer abgenommen (v0.4.0). F04 ist fertig.
