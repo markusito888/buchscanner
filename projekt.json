@@ -12,8 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F01 abnehmen: Icon/Vollbild, Notch und Flugmodus-Start am iPhone bestätigen",
-    "/spec F02 – Seiten aufnehmen"
+    "/spec F02 – Seiten aufnehmen (Kamera, Serienaufnahme, Seiten ordnen/löschen)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -36,6 +35,10 @@
     {
       "datum": "2026-11-16",
       "text": "Version 0.1.1 veröffentlicht, Update-Hinweis am iPhone bestätigt; QA F01: 7 von 10 AK belegt, 0 Fehler, Rest wartet auf iPhone-Abnahme."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F01 Grundgerüst am iPhone abgenommen und fertig."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

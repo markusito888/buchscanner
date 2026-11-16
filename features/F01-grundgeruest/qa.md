@@ -30,3 +30,6 @@ Keine.
 - Home-Bildschirm: Icon (aufgeschlagenes Buch mit Scan-Linie) und Name „Buchscanner“ ansehen, dann starten. Es darf keine Safari-Adressleiste zu sehen sein (AK4).
 - Im Vollbild: Liegt das Logo unter der Uhrzeit oder Dynamic Island, oder die Versionsnummer unter dem Home-Balken? Beides darf nicht sein (AK8).
 - Flugmodus an, App ganz schließen, über das Symbol starten. Die Startseite muss erscheinen, ohne Fehlerseite (AK5).
+
+## Abnahme – 2026-11-16
+Vom Nutzer am iPhone abgenommen: Icon und Vollbild (AK4), Notch und Home-Balken (AK8) sowie Flugmodus-Start (AK5) passen. Damit sind alle 10 AK erfüllt. F01 ist fertig.

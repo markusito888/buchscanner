@@ -1,5 +1,5 @@
 # F01 App-Grundgerüst
-**Status:** in-arbeit · **Stufe:** light · **Abhängig von:** –
+**Status:** fertig · **Stufe:** light · **Abhängig von:** –
 
 ## Ziel
 Ein lauffähiges Grundgerüst der Buchscanner-Web-App, das über GitHub Pages per https erreichbar ist, sich auf dem iPhone auf den Home-Bildschirm legen lässt, offline startet und über neue Versionen informiert. Damit können alle weiteren Features von Anfang an auf dem iPhone getestet werden.
@@ -10,16 +10,16 @@ Ein lauffähiges Grundgerüst der Buchscanner-Web-App, das über GitHub Pages pe
 - Als Nutzer möchte ich sehen, wenn es eine neue Version gibt, und selbst entscheiden, wann neu geladen wird, damit keine laufende Arbeit verloren geht.
 
 ## Akzeptanzkriterien
-- [ ] AK1: Angenommen der Code liegt im GitHub-Repo, wenn man die GitHub-Pages-Adresse in Safari auf dem iPhone öffnet, dann lädt die Startseite über https ohne Fehler und ohne Login.
-- [ ] AK2: Angenommen die Startseite ist geöffnet, dann zeigt sie den Titel „Buchscanner“, zwei große Knöpfe „Buch / Dokument mit Text“ und „Normaler Scan“ (jeweils mindestens 60 px hoch, volle Breite) und unten klein die Versionsnummer (z. B. „Version 0.1.0“).
-- [ ] AK3: Angenommen F02 ist noch nicht gebaut, wenn man einen der beiden Knöpfe antippt, dann erscheint der Hinweis „Kommt bald“ und sonst passiert nichts.
-- [ ] AK4: Angenommen man wählt in Safari „Zum Home-Bildschirm“, dann erscheint das App-Icon (aufgeschlagenes Buch mit Scan-Linie) mit dem Namen „Buchscanner“, und beim Start aus dem Home-Bildschirm öffnet sich die App ohne Safari-Adressleiste (Vollbild).
-- [ ] AK5: Angenommen die App wurde einmal mit Internet geöffnet, wenn das iPhone im Flugmodus ist und man die App vom Home-Bildschirm startet, dann erscheint die Startseite vollständig (keine Fehlerseite von Safari).
-- [ ] AK6: Angenommen eine neue Version wurde hochgeladen, wenn man die App mit Internet öffnet, dann erscheint innerhalb von 10 Sekunden der Hinweis „Neue Version verfügbar“ mit dem Knopf „Neu laden“; erst nach Tippen auf „Neu laden“ läuft die neue Version, und die Versionsnummer unten zeigt die neue Nummer.
-- [ ] AK7: Angenommen das iPhone ist auf Hell- oder Dunkelmodus gestellt, dann folgt die App automatisch (heller bzw. dunkler Hintergrund, Text gut lesbar, Kontrast mind. 4,5:1), Akzentfarbe ist ein ruhiges Blau.
-- [ ] AK8: Angenommen ein iPhone mit Notch/Dynamic Island, dann liegt kein Inhalt unter der Statusleiste oder dem Home-Balken, und es gibt keinen waagerechten Bildlauf bei 375 px Breite.
-- [ ] AK9: Die Seite lädt keine Dateien von fremden Servern (keine CDNs, keine Schriften von Google, kein Tracking); alle Dateien liegen im Repo.
-- [ ] AK10: Lokal startet die App mit `cd app && python3 -m http.server 5190` unter http://localhost:5190 und sieht dort genauso aus.
+- [x] AK1: Angenommen der Code liegt im GitHub-Repo, wenn man die GitHub-Pages-Adresse in Safari auf dem iPhone öffnet, dann lädt die Startseite über https ohne Fehler und ohne Login.
+- [x] AK2: Angenommen die Startseite ist geöffnet, dann zeigt sie den Titel „Buchscanner“, zwei große Knöpfe „Buch / Dokument mit Text“ und „Normaler Scan“ (jeweils mindestens 60 px hoch, volle Breite) und unten klein die Versionsnummer (z. B. „Version 0.1.0“).
+- [x] AK3: Angenommen F02 ist noch nicht gebaut, wenn man einen der beiden Knöpfe antippt, dann erscheint der Hinweis „Kommt bald“ und sonst passiert nichts.
+- [x] AK4: Angenommen man wählt in Safari „Zum Home-Bildschirm“, dann erscheint das App-Icon (aufgeschlagenes Buch mit Scan-Linie) mit dem Namen „Buchscanner“, und beim Start aus dem Home-Bildschirm öffnet sich die App ohne Safari-Adressleiste (Vollbild).
+- [x] AK5: Angenommen die App wurde einmal mit Internet geöffnet, wenn das iPhone im Flugmodus ist und man die App vom Home-Bildschirm startet, dann erscheint die Startseite vollständig (keine Fehlerseite von Safari).
+- [x] AK6: Angenommen eine neue Version wurde hochgeladen, wenn man die App mit Internet öffnet, dann erscheint innerhalb von 10 Sekunden der Hinweis „Neue Version verfügbar“ mit dem Knopf „Neu laden“; erst nach Tippen auf „Neu laden“ läuft die neue Version, und die Versionsnummer unten zeigt die neue Nummer.
+- [x] AK7: Angenommen das iPhone ist auf Hell- oder Dunkelmodus gestellt, dann folgt die App automatisch (heller bzw. dunkler Hintergrund, Text gut lesbar, Kontrast mind. 4,5:1), Akzentfarbe ist ein ruhiges Blau.
+- [x] AK8: Angenommen ein iPhone mit Notch/Dynamic Island, dann liegt kein Inhalt unter der Statusleiste oder dem Home-Balken, und es gibt keinen waagerechten Bildlauf bei 375 px Breite.
+- [x] AK9: Die Seite lädt keine Dateien von fremden Servern (keine CDNs, keine Schriften von Google, kein Tracking); alle Dateien liegen im Repo.
+- [x] AK10: Lokal startet die App mit `cd app && python3 -m http.server 5190` unter http://localhost:5190 und sieht dort genauso aus.
 
 ## Nicht im Umfang
 - Kamera, Scannen, Texterkennung, Speichern (ab F02).

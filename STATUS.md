@@ -7,7 +7,7 @@
 
 | ID | Feature | Prio | Status | Hinweis |
 |----|---------|------|--------|---------|
-| F01 | App-Grundgerüst: PWA, Home-Bildschirm, offline, GitHub Pages | P0 | in-pruefung | QA fertig (0 Fehler); wartet auf Abnahme: Icon/Vollbild, Notch, Flugmodus am iPhone |
+| F01 | App-Grundgerüst: PWA, Home-Bildschirm, offline, GitHub Pages | P0 | fertig | Abgenommen 2026-11-16 · https://markusito888.github.io/buchscanner/ |
 | F02 | Seiten aufnehmen: Kamera, Serienaufnahme, Seiten ordnen/löschen, Kontrast verbessern | P0 | idee | |
 | F03 | Bibliothek: Scans auf dem iPhone speichern, benennen, später weiterscannen, löschen | P0 | idee | Bücher entstehen über mehrere Tage |
 | F04 | Normaler Scan speichern: als Bild (Fotos) oder PDF (Dateien) | P0 | idee | |
