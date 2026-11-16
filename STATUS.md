@@ -1,13 +1,13 @@
 # Status: Buchscanner
 
 **Stufe:** light
-**Zuletzt aktualisiert:** 2026-11-15
+**Zuletzt aktualisiert:** 2026-11-16
 
 ## Features
 
 | ID | Feature | Prio | Status | Hinweis |
 |----|---------|------|--------|---------|
-| F01 | App-Grundgerüst: PWA, Home-Bildschirm, offline, GitHub Pages | P0 | in-arbeit | Grundlage für alles |
+| F01 | App-Grundgerüst: PWA, Home-Bildschirm, offline, GitHub Pages | P0 | in-pruefung | Live: https://markusito888.github.io/buchscanner/ – iPhone-Test, dann /qa F01 |
 | F02 | Seiten aufnehmen: Kamera, Serienaufnahme, Seiten ordnen/löschen, Kontrast verbessern | P0 | idee | |
 | F03 | Bibliothek: Scans auf dem iPhone speichern, benennen, später weiterscannen, löschen | P0 | idee | Bücher entstehen über mehrere Tage |
 | F04 | Normaler Scan speichern: als Bild (Fotos) oder PDF (Dateien) | P0 | idee | |

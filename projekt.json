@@ -2,10 +2,38 @@
   "name": "Buchscanner",
   "beschreibung": "iPhone-Web-App zum schnellen Scannen von Dokumenten und ganzen Büchern mit Texterkennung und Export an Claude. Dazu ein normaler Scan als Bild oder PDF.",
   "typ": "app",
-  "status": "idee",
+  "status": "in-arbeit",
   "start": "app/index.html",
-  "tags": ["iphone", "scanner", "ocr", "pwa", "claude"],
-  "naechsteSchritte": ["/umsetzen F01 – Grundgerüst und GitHub Pages"],
+  "tags": [
+    "iphone",
+    "scanner",
+    "ocr",
+    "pwa",
+    "claude"
+  ],
+  "naechsteSchritte": [
+    "F01 auf dem iPhone testen (Home-Bildschirm, Vollbild, Flugmodus, Update-Hinweis mit Version 0.1.1)",
+    "/qa F01",
+    "/spec F02 – Seiten aufnehmen"
+  ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
-  "verlauf": [{ "datum": "2026-11-15", "text": "Projekt angelegt: Stufe light, Web-App, Netlify, Texterkennung DE/EN/ES, Export an die Claude-App." }, { "datum": "2026-11-15", "text": "Spec F01 Grundgerüst geschrieben; Hosting auf GitHub Pages umgestellt." }]
+  "verlauf": [
+    {
+      "datum": "2026-11-15",
+      "text": "Projekt angelegt: Stufe light, Web-App, Netlify, Texterkennung DE/EN/ES, Export an die Claude-App."
+    },
+    {
+      "datum": "2026-11-15",
+      "text": "Spec F01 Grundgerüst geschrieben; Hosting auf GitHub Pages umgestellt."
+    },
+    {
+      "datum": "2026-11-15",
+      "text": "F01 Grundgerüst gebaut und lokal geprüft; Veröffentlichung wartet auf GitHub-Anmeldung."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Repo markusito888/buchscanner angelegt, GitHub Pages eingeschaltet, F01 live geprüft (kein Bildlauf, keine Fremd-Anfragen, offline ok)."
+    }
+  ],
+  "url": "https://markusito888.github.io/buchscanner/"
 }
