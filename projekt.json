@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/spec F03 – Bibliothek (dauerhaft speichern, Buch-Bilder nur vorübergehend)"
+    "/umsetzen F03 – Bibliothek bauen (Speichern in IndexedDB, Liste „Meine Scans“)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -67,6 +67,10 @@
     {
       "datum": "2026-11-16",
       "text": "Plan geändert: Buch-Scan speichert dauerhaft nur Text (Export .md und EPUB für Kindle), Bilder nur beim normalen Scan."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Spec F03 Bibliothek bestätigt: sofortiges Speichern pro Seite, Liste „Meine Scans“, Umbenennen, Löschen, Anzeige „Belegt“."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

@@ -9,7 +9,7 @@
 |----|---------|------|--------|---------|
 | F01 | App-Grundgerüst: PWA, Home-Bildschirm, offline, GitHub Pages | P0 | fertig | Abgenommen 2026-11-16 · https://markusito888.github.io/buchscanner/ |
 | F02 | Seiten aufnehmen: Kamera, Serienaufnahme, Seiten ordnen/löschen, Kontrast verbessern | P0 | fertig | Abgenommen 2026-11-16 (v0.2.1) |
-| F03 | Bibliothek: Scans auf dem iPhone speichern, über mehrere Tage weiterscannen, umbenennen, löschen; Buch-Bilder nur vorübergehend | P0 | idee | Buch: dauerhaft nur der Text |
+| F03 | Bibliothek: Scans auf dem iPhone speichern, über mehrere Tage weiterscannen, umbenennen, löschen; Buch-Bilder nur vorübergehend | P0 | spezifiziert | Buch: dauerhaft nur der Text |
 | F04 | Normaler Scan speichern: als Bild (Fotos) oder PDF (Dateien) | P0 | idee | |
 | F05 | Texterkennung: Deutsch/Englisch/Spanisch, im Hintergrund, Text pro Seite korrigierbar, schlechte Seiten markieren | P0 | idee | |
 | F06 | Text-Export: .md (Claude/Claude Code) und EPUB (Kindle) über das Teilen-Menü, danach „Bilder löschen, Text behalten“; große Bücher in Teile | P0 | idee | Kein PDF für Buchtext |
