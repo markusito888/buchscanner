@@ -12,8 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F02 auf dem iPhone ausprobieren (Version 0.2.0)",
-    "/qa F02",
+    "/umsetzen F02 – 2 Fehler aus der QA beheben (Dokument-Kontrast bei Schatten, Update-Leiste über der Kamera)",
+    "/qa F02 erneut",
     "/spec F03 – Bibliothek (dauerhaft speichern)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
@@ -49,6 +49,10 @@
     {
       "datum": "2026-11-16",
       "text": "F02 Seiten aufnehmen gebaut: Live-Kamera für Bücher, iPhone-Kamera für normalen Scan, Übersicht, Großansicht, Kontrast; 100 Testaufnahmen ohne Probleme."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "QA F02: 15 von 18 AK bestanden, 2 mittlere Fehler (Dokument-Kontrast bei Schatten, Update-Leiste über der Kamera)."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
