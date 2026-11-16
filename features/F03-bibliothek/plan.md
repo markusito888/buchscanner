@@ -33,3 +33,6 @@ Die Startseite bekommt die Liste „Meine Scans“ und die Zeile „Belegt“. D
 - Auslöser während des Speichern (20 Aufnahmen): höchstens 12 ms gesperrt.
 - Offline mit Liste, keine Fremd-Anfragen, kein waagerechter Bildlauf, hell und dunkel ok. In der Konsole stehen nur die erwarteten Warnungen beim Speicher-voll-Test.
 - Nicht prüfbar am Mac: Safari-Speicher auf dem iPhone mit echten 4K-Fotos, Verhalten beim Wegwischen der App und bei „dauerhaftem Speicher“ in iOS.
+
+## Nachtrag v0.3.1
+- Beim Wechsel aus der Übersicht in die Kamera oder die Großansicht hören die Vorschaubilder auf, sich im Hintergrund zu berechnen. Vorher konnte das bei großen Scans den Auslöser bis zu 1,4 s sperren (im Test mit 220 Seiten aufgefallen). Danach ist der Auslöser auf dem Test-Mac höchstens 0,3 s gesperrt.

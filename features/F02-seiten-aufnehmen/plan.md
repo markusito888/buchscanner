@@ -35,3 +35,10 @@ Alles läuft weiter auf einer Seite, ohne Bibliotheken. `index.html` bekommt dre
 - [x] 8. Fehler 1: Schattenausgleich im Filter „Dokument“ → AK15
 - [x] 9. Fehler 2: Update-Leiste in der Live-Kamera ausblenden, Hinweise dort oben zeigen, Rückfrage vor „Neu laden“ bei ungespeicherten Seiten (`window.vorNeuLaden` in scan.js, genutzt von app.js) → AK2, AK18
 - [x] 10. Wunsch: deutlichere Rückmeldung beim Auslösen (Ränder leuchten, Zähler hüpft) → AK2
+
+## Nachbesserung v0.3.1 (2026-11-16): heller Text auf dunklem Grund
+- [x] 11. Filter „Dokument“: Je Feld mit seinen Nachbarn wird der Median der Blöcke (über ein Histogramm) mit dem dunkelsten und dem hellsten Block verglichen. Liegt der Median nahe am dunklen Ende, ist der Grund dunkel. Felder ohne Schrift übernehmen die Entscheidung der Nachbarn. Am Rand eines dunklen Bereichs entscheidet der Median aus 5 × 5 Blöcken, so bleibt die Kante scharf. Dunkle Bereiche werden umgekehrt und danach wie Papier behandelt (Schatten weg, Schrift schwarz) → AK19
+- Geprüft an Testseiten: weiße Schrift auf Dunkelblau, Rot und Mittelblau sowie eine weiße Seite mit dunklem Kasten werden schwarz auf weiß. Gelbes Papier, Seite mit Schatten und das echte Foto `seite.jpg` sehen aus wie vorher. Am Kasten bleiben nur winzige Eckpunkte.
+- Dauer je Vorschaubild (300 px): Textseite ca. 4 ms (vorher 2,6 ms), dunkle Seite ca. 6 ms.
+- Annahme: Fotos in einer Seite können bei „Dokument“ teils wie ein Negativ aussehen. Für Fotos sind „Farbe“ und „Grau“ da.
+- Noch offen: Test mit den echten Seiten des Nutzers (dunkler bzw. bunter Hintergrund).

@@ -33,6 +33,8 @@ Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange
 - [x] AK15: Der Kontrast-Umschalter gilt für alle Seiten des Scans. Voreingestellt ist bei Buch-Scans „Dokument“, bei normalen Scans „Farbe“. „Grau“ zeigt Graustufen. „Dokument“ zeigt Graustufen mit kräftigem Kontrast: Papier nahezu weiß, Schrift nahezu schwarz. Ein Wechsel aktualisiert alle Vorschaubilder und die Großansicht innerhalb von 3 s bei 50 Seiten. Die Originalaufnahme bleibt erhalten, ein Zurückschalten auf „Farbe“ zeigt wieder das unveränderte Foto.
 - [x] AK16: Angenommen in der Übersicht wird „Schließen“ angetippt, dann fragt die App „Scan verwerfen? Die Seiten werden noch nicht gespeichert.“ (Verwerfen / Abbrechen). Bei „Verwerfen“ geht es zur Startseite, und alle Seiten sind aus dem Speicher entfernt.
 
+- [ ] AK19: „Dokument“ erkennt hellen Text auf dunklem oder farbigem Grund (ganze Seite oder einzelne Kästen) automatisch und zeigt ihn als dunkle Schrift auf weißem Grund. Normale Seiten (dunkle Schrift auf hellem oder farbigem Papier, mit Schatten) sehen aus wie vorher. „Farbe“ und „Grau“ bleiben unverändert. *(Nachbesserung v0.3.1, Wunsch nach iPhone-Test)*
+
 **Allgemein**
 - [x] AK17: Im Buch-Modus lassen sich 100 Seiten hintereinander aufnehmen, ohne dass die App abstürzt, neu lädt oder merklich langsamer auslöst (AK2 gilt auch bei Seite 100). Geprüft wird auf dem iPhone des Nutzers.
 - [x] AK18: Alles läuft ohne Internet und ohne Anfragen an fremde Server. Kein Bild verlässt das iPhone. Bildlauf gibt es nur senkrecht in der Übersicht, kein waagerechter Bildlauf bei 375 px. Hell und Dunkel werden wie in F01 befolgt (das Kamera-Vollbild ist immer dunkel).
@@ -62,6 +64,7 @@ Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange
 - Kontrast → 3 Stufen je Scan, das Original bleibt. Voreinstellung: Buch „Dokument“, normal „Farbe“ (2026-11-16).
 - Speichern → F02 nur im Arbeitsspeicher, F03 direkt danach (2026-11-16).
 - Rückmeldung beim Auslösen → deutlicher: Ränder leuchten auf, Zähler hüpft (Wunsch nach iPhone-Test, 2026-11-16).
+- Heller Text auf dunklem Grund → automatische Erkennung je Bereich im Modus „Dokument“, kein Schalter. Grund: In Büchern betrifft das meist nur einzelne Kästen, und ein Schalter für den ganzen Scan würde die normalen Seiten verschlechtern (2026-11-16).
 - Update-Hinweis → in der Live-Kamera ausgeblendet; „Neu laden“ fragt nach, solange ungespeicherte Seiten da sind (aus QA, 2026-11-16).
 
 ## Offene Fragen

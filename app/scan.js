@@ -61,9 +61,131 @@
 
   const grauwert = (d, j) => (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8;
 
+  // Kleine Blöcke mitteln (glättet Bildrauschen). Ergebnis: Mittelwerte, Blöcke je Zeile/Spalte
+  function blockMittel(grau, b, h, block) {
+    const bb = Math.ceil(b / block), bh = Math.ceil(h / block);
+    const summe = new Float32Array(bb * bh), zahl = new Uint32Array(bb * bh);
+    for (let y = 0; y < h; y++) {
+      const zy = ((y / block) | 0) * bb;
+      for (let x = 0; x < b; x++) { const k = zy + ((x / block) | 0); summe[k] += grau[y * b + x]; zahl[k]++; }
+    }
+    for (let k = 0; k < summe.length; k++) summe[k] /= zahl[k];
+    return { mittel: summe, bb, bh };
+  }
+
+  // 3 × 3-Mittelwert über ein Feld-Raster
+  function glaette(quelle, fb, fh) {
+    const ziel = new Float32Array(fb * fh);
+    for (let y = 0; y < fh; y++) for (let x = 0; x < fb; x++) {
+      let wert = 0, anzahl = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const yy = y + dy, xx = x + dx;
+        if (yy < 0 || xx < 0 || yy >= fh || xx >= fb) continue;
+        wert += quelle[yy * fb + xx]; anzahl++;
+      }
+      ziel[y * fb + x] = wert / anzahl;
+    }
+    return ziel;
+  }
+
+  // Wert eines Feld-Rasters an Bildpunkt (x, y), zwischen den Feldmitten weich übergehend
+  function zwischen(raster, fb, fh, feld, x, y) {
+    const fy = Math.min(fh - 1, Math.max(0, (y + 0.5) / feld - 0.5));
+    const y0 = fy | 0, y1 = Math.min(fh - 1, y0 + 1), ty = fy - y0;
+    const fx = Math.min(fb - 1, Math.max(0, (x + 0.5) / feld - 0.5));
+    const x0 = fx | 0, x1 = Math.min(fb - 1, x0 + 1), tx = fx - x0;
+    const oben = raster[y0 * fb + x0] * (1 - tx) + raster[y0 * fb + x1] * tx;
+    const unten = raster[y1 * fb + x0] * (1 - tx) + raster[y1 * fb + x1] * tx;
+    return oben * (1 - ty) + unten * ty;
+  }
+
+  // Feld (Spalte, Zeile) eines Blocks
+  const feldVon = (bx, block, feld, max) => Math.min(max - 1, ((bx * block) / feld) | 0);
+
+  // Papierhelligkeit je Feld = hellster gemittelter Block im Feld, zweimal geglättet.
+  // umgekehrt: dasselbe für das umgekehrte Bild (hellster Block = dunkelster im Original)
+  function papierRaster(bm, block, feld, fb, fh, umgekehrt) {
+    const { mittel, bb, bh } = bm;
+    const raster = new Float32Array(fb * fh);
+    for (let y = 0; y < bh; y++) {
+      const fy = feldVon(y, block, feld, fh);
+      for (let x = 0; x < bb; x++) {
+        const k = fy * fb + feldVon(x, block, feld, fb);
+        const m = umgekehrt ? 255 - mittel[y * bb + x] : mittel[y * bb + x];
+        if (m > raster[k]) raster[k] = m;
+      }
+    }
+    return glaette(glaette(raster, fb, fh), fb, fh);
+  }
+
+  // Wo ist der Grund dunkler als die Schrift (heller Text auf dunklem oder farbigem Grund)?
+  // Je Feld (mit seinen Nachbarn): Liegt der Median der Blöcke nahe am dunkelsten Block,
+  // ist der Grund dunkel. Felder ohne Schrift übernehmen die Entscheidung ihrer Nachbarn.
+  // Ergebnis: Gewicht je Feld (0 = normal, 1 = umkehren, dazwischen = Rand) oder null.
+  function umkehrRaster(bm, block, feld, fb, fh) {
+    const { mittel, bb, bh } = bm;
+    const n = fb * fh;
+    // Je Feld: dunkelster und hellster Block sowie ein Histogramm der Blöcke (32 Stufen) für den Median
+    const fMin = new Float32Array(n).fill(255), fMax = new Float32Array(n), hist = new Uint16Array(n * 32);
+    for (let y = 0; y < bh; y++) {
+      const fy = feldVon(y, block, feld, fh);
+      for (let x = 0; x < bb; x++) {
+        const k = fy * fb + feldVon(x, block, feld, fb), m = mittel[y * bb + x];
+        if (m < fMin[k]) fMin[k] = m;
+        if (m > fMax[k]) fMax[k] = m;
+        hist[k * 32 + Math.min(31, (m / 8) | 0)]++;
+      }
+    }
+    let wahl = new Int8Array(n); // 1 = umkehren, 0 = normal, -1 = unklar
+    let irgendwo = false;
+    const summe = new Uint32Array(32);
+    for (let y = 0; y < fh; y++) for (let x = 0; x < fb; x++) {
+      // Feld mit seinen Nachbarn: Spanne und Median aller Blöcke
+      let min = 255, max = 0, anzahl = 0;
+      summe.fill(0);
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const yy = y + dy, xx = x + dx;
+        if (yy < 0 || xx < 0 || yy >= fh || xx >= fb) continue;
+        const k = yy * fb + xx;
+        if (fMin[k] < min) min = fMin[k];
+        if (fMax[k] > max) max = fMax[k];
+        for (let s = 0; s < 32; s++) { summe[s] += hist[k * 32 + s]; anzahl += hist[k * 32 + s]; }
+      }
+      const k = y * fb + x;
+      if (max - min < 40) { wahl[k] = -1; continue; }
+      let median = 0;
+      for (let s = 0, z = 0; s < 32; s++) { z += summe[s]; if (z * 2 >= anzahl) { median = s * 8 + 4; break; } }
+      wahl[k] = (median - min) / (max - min) < 0.5 ? 1 : 0;
+      if (wahl[k] === 1) irgendwo = true;
+    }
+    if (!irgendwo) return null;
+    // Unklare Felder nach der Mehrheit der Nachbarn füllen (von außen nach innen)
+    for (let runde = 0; runde < 60; runde++) {
+      let offen = 0;
+      const neu = wahl.slice();
+      for (let y = 0; y < fh; y++) for (let x = 0; x < fb; x++) {
+        const k = y * fb + x;
+        if (wahl[k] !== -1) continue;
+        let ja = 0, nein = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          const yy = y + dy, xx = x + dx;
+          if (yy < 0 || xx < 0 || yy >= fh || xx >= fb) continue;
+          const w = wahl[yy * fb + xx];
+          if (w === 1) ja++; else if (w === 0) nein++;
+        }
+        if (ja + nein) neu[k] = ja > nein ? 1 : 0; else offen++;
+      }
+      wahl = neu;
+      if (!offen) break;
+    }
+    const gewicht = new Float32Array(n);
+    for (let k = 0; k < n; k++) gewicht[k] = wahl[k] === 1 ? 1 : 0;
+    return glaette(gewicht, fb, fh);
+  }
+
   // Graustufen; bei „Dokument“ zusätzlich Schatten ausgleichen und Kontrast verstärken:
-  // 1. Papierhelligkeit je Feld schätzen (hellster gemittelter Block im Feld, dann geglättet),
-  // 2. jeden Punkt durch die Papierhelligkeit an seiner Stelle teilen (Papier → weiß, auch im Schatten),
+  // 1. Bereiche mit hellem Text auf dunklem Grund finden; dort wird die Helligkeit umgekehrt,
+  // 2. Papierhelligkeit je Feld schätzen und jeden Punkt dadurch teilen (Papier → weiß, auch im Schatten),
   // 3. Tonwerte spreizen: Papier → weiß, Schrift → schwarz, Mitteltöne etwas dunkler.
   function filtere(ctx, b, h, modus) {
     if (modus === 'farbe') return;
@@ -74,53 +196,44 @@
     for (let i = 0, j = 0; i < n; i++, j += 4) grau[i] = grauwert(d, j);
 
     if (modus === 'dokument') {
-      // Kleine Blöcke mitteln (glättet Bildrauschen), dann je Feld den hellsten Block nehmen (= Papier)
       const feld = Math.max(8, Math.round(Math.max(b, h) / 40));
       const block = Math.max(2, Math.round(feld / 4));
-      const bb = Math.ceil(b / block), bh = Math.ceil(h / block);
-      const summe = new Float32Array(bb * bh), zahl = new Uint32Array(bb * bh);
-      for (let y = 0; y < h; y++) {
-        const zy = ((y / block) | 0) * bb;
-        for (let x = 0; x < b; x++) { const k = zy + ((x / block) | 0); summe[k] += grau[y * b + x]; zahl[k]++; }
-      }
       const fb = Math.ceil(b / feld), fh = Math.ceil(h / feld);
-      let raster = new Float32Array(fb * fh);
-      for (let y = 0; y < bh; y++) {
-        const fy = Math.min(fh - 1, ((y * block) / feld) | 0);
-        for (let x = 0; x < bb; x++) {
-          const fx = Math.min(fb - 1, ((x * block) / feld) | 0);
-          const k = y * bb + x, m = summe[k] / zahl[k];
-          if (m > raster[fy * fb + fx]) raster[fy * fb + fx] = m;
+      const bm = blockMittel(grau, b, h, block);
+      const papier = papierRaster(bm, block, feld, fb, fh, false);
+      const umkehr = umkehrRaster(bm, block, feld, fb, fh);
+      const papierUm = umkehr && papierRaster(bm, block, feld, fb, fh, true);
+      // Am Rand eines dunklen Bereichs je Block entscheiden: Median der Umgebung (5 × 5 Blöcke)
+      // näher am dunklen Grund → umkehren. Der Median folgt Kanten und übersieht einzelne Schriftzüge.
+      let blockUm = null;
+      if (umkehr) {
+        const { mittel, bb, bh } = bm;
+        blockUm = new Uint8Array(bb * bh);
+        const werte = [];
+        for (let y = 0; y < bh; y++) for (let x = 0; x < bb; x++) {
+          const px = Math.min(b - 1, x * block + (block >> 1)), py = Math.min(h - 1, y * block + (block >> 1));
+          const w = zwischen(umkehr, fb, fh, feld, px, py);
+          if (w <= 0.02) continue;
+          if (w > 0.98) { blockUm[y * bb + x] = 1; continue; }
+          werte.length = 0;
+          for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+            const yy = y + dy, xx = x + dx;
+            if (yy >= 0 && xx >= 0 && yy < bh && xx < bb) werte.push(mittel[yy * bb + xx]);
+          }
+          werte.sort((p, q) => p - q);
+          const hell = zwischen(papier, fb, fh, feld, px, py), dunkel = 255 - zwischen(papierUm, fb, fh, feld, px, py);
+          blockUm[y * bb + x] = werte[werte.length >> 1] < (hell + dunkel) / 2 ? 1 : 0;
         }
       }
-      const glaette = (quelle) => {
-        const ziel = new Float32Array(fb * fh);
-        for (let y = 0; y < fh; y++) for (let x = 0; x < fb; x++) {
-          let wert = 0, anzahl = 0;
-          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-            const yy = y + dy, xx = x + dx;
-            if (yy < 0 || xx < 0 || yy >= fh || xx >= fb) continue;
-            wert += quelle[yy * fb + xx]; anzahl++;
-          }
-          ziel[y * fb + x] = wert / anzahl;
-        }
-        return ziel;
-      };
-      raster = glaette(glaette(raster));
 
-      // Papierhelligkeit an jedem Punkt (zwischen den Feldmitten weich übergehend)
       const verlauf = new Uint32Array(256);
       for (let y = 0; y < h; y++) {
-        const fy = Math.min(fh - 1, Math.max(0, (y + 0.5) / feld - 0.5));
-        const y0 = fy | 0, y1 = Math.min(fh - 1, y0 + 1), ty = fy - y0;
+        const zeile = ((y / block) | 0) * bm.bb;
         for (let x = 0; x < b; x++) {
-          const fx = Math.min(fb - 1, Math.max(0, (x + 0.5) / feld - 0.5));
-          const x0 = fx | 0, x1 = Math.min(fb - 1, x0 + 1), tx = fx - x0;
-          const oben = raster[y0 * fb + x0] * (1 - tx) + raster[y0 * fb + x1] * tx;
-          const unten = raster[y1 * fb + x0] * (1 - tx) + raster[y1 * fb + x1] * tx;
-          const papier = Math.max(8, oben * (1 - ty) + unten * ty);
           const i = y * b + x;
-          const v = Math.min(255, (grau[i] * 255) / papier) | 0;
+          const v = blockUm && blockUm[zeile + ((x / block) | 0)]
+            ? Math.min(255, ((255 - grau[i]) * 255) / Math.max(8, zwischen(papierUm, fb, fh, feld, x, y))) | 0
+            : Math.min(255, (grau[i] * 255) / Math.max(8, zwischen(papier, fb, fh, feld, x, y))) | 0;
           grau[i] = v;
           verlauf[v]++;
         }
@@ -310,6 +423,7 @@
   let strom = null;
 
   function kameraOeffnen() {
+    rasterLauf++; // Vorschaubilder der Übersicht nicht weiterrechnen, Auslöser bleibt frei
     zeige('ansicht-kamera');
     $('kamera-fertig').textContent = ersetzen !== null ? 'Abbrechen' : 'Fertig';
     zaehlerAktualisieren();
@@ -512,6 +626,7 @@
     });
     raster.replaceChildren(...bilder.map((b) => b[2]));
     for (const [seite, img] of bilder) {
+      if (lauf !== rasterLauf) return;
       if (img.src) continue;
       try {
         const url = await vorschauUrl(seite, modus);
@@ -585,6 +700,7 @@
   function zeigeGross() {
     if (!scan || scan.seiten.length === 0) { scanSchliessen(); return; }
     aktuell = Math.min(aktuell, scan.seiten.length - 1);
+    rasterLauf++;
     zeige('ansicht-gross');
     const seite = scan.seiten[aktuell];
     $('gross-titel').textContent = `Seite ${aktuell + 1} von ${scan.seiten.length}`;
