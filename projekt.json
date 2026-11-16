@@ -12,8 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "Version 0.3.1 hochladen und am iPhone testen (auch dunkle/bunte Seiten)",
-    "/qa F03 (mit F02-AK19)"
+    "F03 am iPhone abnehmen (Wegwischen, Weiterscannen, Belegt, dunkle Seiten)",
+    "Danach /spec F04 – normaler Scan als Bild oder PDF speichern"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -80,6 +80,10 @@
     {
       "datum": "2026-11-16",
       "text": "Filter „Dokument“ erkennt jetzt hellen Text auf dunklem oder farbigem Grund automatisch (v0.3.1); Auslöser bleibt bei großen Scans frei."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "QA F03: 15 von 15 AK bestanden, 0 Fehler (inkl. Absturz-Test und F02-AK19); wartet auf Abnahme am iPhone."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
