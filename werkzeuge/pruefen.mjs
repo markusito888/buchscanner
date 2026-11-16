@@ -48,10 +48,6 @@ for (const modus of ['light', 'dark']) {
     version: document.getElementById('version').textContent })`);
 }
 
-// Kommt bald
-ergebnis.kommtBald = await js(`(async () => { document.querySelector('[data-funktion=scan]').click();
-  const h = document.getElementById('hinweis'); return { sichtbar: !h.hidden, text: h.textContent }; })()`);
-
 // Service Worker und Offline
 ergebnis.serviceWorker = await js(`navigator.serviceWorker.ready.then(r => !!r.active)`);
 await cdp('Page.reload'); await warte(1000);

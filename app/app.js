@@ -1,6 +1,6 @@
 // Buchscanner – Startseite, Hinweise, Offline-Betrieb und Update-Hinweis.
 // Versionsnummer auch in sw.js ändern (werkzeuge/version.sh macht beides).
-const VERSION = '0.1.1';
+const VERSION = '0.2.0';
 
 document.getElementById('version').textContent = VERSION;
 
@@ -13,11 +13,6 @@ function zeigeHinweis(text) {
   clearTimeout(hinweisTimer);
   hinweisTimer = setTimeout(() => { hinweis.hidden = true; }, 2500);
 }
-
-// Die Funktionen kommen ab F02
-document.querySelectorAll('[data-funktion]').forEach((knopf) => {
-  knopf.addEventListener('click', () => zeigeHinweis('Kommt bald'));
-});
 
 // Service Worker: offline starten und über neue Versionen informieren
 if ('serviceWorker' in navigator) {

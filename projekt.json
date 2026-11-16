@@ -12,7 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/umsetzen F02 – Seiten aufnehmen",
+    "F02 auf dem iPhone ausprobieren (Version 0.2.0)",
+    "/qa F02",
     "/spec F03 – Bibliothek (dauerhaft speichern)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
@@ -44,6 +45,10 @@
     {
       "datum": "2026-11-16",
       "text": "Spec F02 Seiten aufnehmen bestätigt: Live-Kamera für Bücher, iPhone-Kamera für normalen Scan, Kontrast in 3 Stufen."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F02 Seiten aufnehmen gebaut: Live-Kamera für Bücher, iPhone-Kamera für normalen Scan, Übersicht, Großansicht, Kontrast; 100 Testaufnahmen ohne Probleme."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

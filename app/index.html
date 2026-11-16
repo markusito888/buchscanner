@@ -19,7 +19,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="start">
+  <!-- Startseite -->
+  <main id="ansicht-start" class="start">
     <header class="kopf">
       <img class="logo" src="icons/icon.svg" alt="" width="72" height="72">
       <h1>Buchscanner</h1>
@@ -27,11 +28,11 @@
     </header>
 
     <nav class="knoepfe">
-      <button class="knopf knopf-haupt" type="button" data-funktion="text">
+      <button id="start-buch" class="knopf knopf-haupt" type="button">
         <span class="knopf-titel">Buch / Dokument mit Text</span>
         <span class="knopf-info">Viele Seiten scannen, Text erfassen</span>
       </button>
-      <button class="knopf" type="button" data-funktion="scan">
+      <button id="start-normal" class="knopf" type="button">
         <span class="knopf-titel">Normaler Scan</span>
         <span class="knopf-info">Als Bild oder PDF speichern</span>
       </button>
@@ -39,6 +40,89 @@
 
     <footer class="fuss">Version <span id="version"></span></footer>
   </main>
+
+  <!-- Live-Kamera (Buch / Dokument) -->
+  <section id="ansicht-kamera" class="kamera" hidden>
+    <video id="video" class="kamera-bild" playsinline muted autoplay></video>
+    <div id="blitz" class="blitz"></div>
+    <div id="kamera-fehler" class="kamera-fehler" hidden>
+      <h2>Kein Zugriff auf die Kamera</h2>
+      <p>Öffne auf dem iPhone die <strong>Einstellungen → Apps → Safari → Kamera</strong> und wähle „Erlauben“. Oder tippe in Safari links in der Adressleiste auf das Symbol und dann auf „Website-Einstellungen“ → „Kamera“.</p>
+      <p>Danach die App neu öffnen.</p>
+      <button id="kamera-zurueck" class="knopf-voll" type="button">Zurück</button>
+    </div>
+    <div class="kamera-oben">
+      <span id="zaehler" class="zaehler">0 Seiten</span>
+    </div>
+    <div class="kamera-unten">
+      <div class="kamera-seite">
+        <img id="letzte" class="letzte" alt="" hidden>
+      </div>
+      <button id="ausloeser" class="ausloeser" type="button" aria-label="Seite aufnehmen"></button>
+      <div class="kamera-seite">
+        <button id="kamera-fertig" class="kamera-text-knopf" type="button">Fertig</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seitenübersicht -->
+  <section id="ansicht-uebersicht" class="seite-ansicht" hidden>
+    <header class="leiste">
+      <button id="ueb-schliessen" class="text-knopf" type="button">Schließen</button>
+      <div class="leiste-titel">
+        <strong id="ueb-art"></strong>
+        <span id="ueb-anzahl"></span>
+      </div>
+      <span class="text-knopf platzhalter" aria-hidden="true"></span>
+    </header>
+    <div class="inhalt">
+      <div class="segment" role="group" aria-label="Kontrast">
+        <button type="button" data-kontrast="farbe">Farbe</button>
+        <button type="button" data-kontrast="grau">Grau</button>
+        <button type="button" data-kontrast="dokument">Dokument</button>
+      </div>
+      <p class="speicher-hinweis">Noch kein Speichern: Seiten gehen beim Schließen der App verloren.</p>
+      <div id="raster" class="raster"></div>
+    </div>
+    <div class="fuss-leiste">
+      <button id="ueb-plus" class="knopf-voll" type="button">+ Seiten</button>
+    </div>
+  </section>
+
+  <!-- Großansicht einer Seite -->
+  <section id="ansicht-gross" class="seite-ansicht" hidden>
+    <header class="leiste">
+      <button id="gross-zurueck" class="text-knopf" type="button">‹ Zurück</button>
+      <div class="leiste-titel">
+        <strong id="gross-titel"></strong>
+        <span id="gross-masse"></span>
+      </div>
+      <span class="text-knopf platzhalter" aria-hidden="true"></span>
+    </header>
+    <div class="gross-bild">
+      <canvas id="gross-canvas" width="1" height="1"></canvas>
+    </div>
+    <div class="gross-knoepfe">
+      <button id="gross-vor" class="knopf-klein" type="button">‹ Nach vorne</button>
+      <button id="gross-nach" class="knopf-klein" type="button">Nach hinten ›</button>
+      <button id="gross-neu" class="knopf-klein" type="button">Neu aufnehmen</button>
+      <button id="gross-loeschen" class="knopf-klein knopf-gefahr" type="button">Löschen</button>
+    </div>
+  </section>
+
+  <!-- iPhone-Kamera (normaler Scan) -->
+  <input id="foto-eingabe" type="file" accept="image/*" capture="environment" hidden>
+
+  <!-- Rückfrage -->
+  <dialog id="frage" class="frage">
+    <form method="dialog">
+      <p id="frage-text"></p>
+      <div class="frage-knoepfe">
+        <button value="nein" type="submit" class="knopf-klein">Abbrechen</button>
+        <button value="ja" type="submit" id="frage-ja" class="knopf-klein knopf-gefahr">Löschen</button>
+      </div>
+    </form>
+  </dialog>
 
   <div id="hinweis" class="hinweis" role="status" aria-live="polite" hidden></div>
 
@@ -48,5 +132,6 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="scan.js"></script>
 </body>
 </html>
