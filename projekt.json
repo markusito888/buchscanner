@@ -12,8 +12,8 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "Version 0.4.0 hochladen und am iPhone testen (In Dateien sichern, Bilder sichern)",
-    "/qa F04"
+    "Am iPhone messen: 10 Seiten als PDF unter 10 s?",
+    "Danach entscheiden: /umsetzen F04 (Tempo) oder AK11 über iPhone-Test abnehmen"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -96,6 +96,10 @@
     {
       "datum": "2026-11-16",
       "text": "F04 gebaut (v0.4.0): normaler Scan als PDF (A4, eigener PDF-Erzeuger) oder Bilder über das Teilen-Menü, ohne Standortdaten."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "QA F04: 11 von 12 AK bestanden; 10 Seiten als PDF am Mac 5,6–11,9 s (Ziel 10 s)."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
