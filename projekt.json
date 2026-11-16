@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "Version 0.3.0 hochladen und am iPhone testen",
+    "F03 am iPhone testen",
     "/qa F03"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
