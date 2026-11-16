@@ -12,8 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F03 am iPhone abnehmen (Wegwischen, Weiterscannen, Belegt, dunkle Seiten)",
-    "Danach /spec F04 – normaler Scan als Bild oder PDF speichern"
+    "/spec F04 – normaler Scan als Bild (Fotos) oder PDF (Dateien) speichern"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -84,6 +83,10 @@
     {
       "datum": "2026-11-16",
       "text": "QA F03: 15 von 15 AK bestanden, 0 Fehler (inkl. Absturz-Test und F02-AK19); wartet auf Abnahme am iPhone."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F03 Bibliothek abgenommen und fertig (v0.3.1)."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

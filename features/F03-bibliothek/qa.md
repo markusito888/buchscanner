@@ -59,3 +59,6 @@ Keine.
 - Einen alten Scan öffnen, mit „+ Seiten“ weiterscannen, oben auf den Namen tippen, umbenennen, „‹ Scans“: Die Liste zeigt den neuen Namen und die neue Seitenzahl.
 - Einen normalen Scan mit 2–3 Fotos machen, auf „Belegt“ achten, dann „Scan löschen“: Der Wert sinkt.
 - Deine Seiten mit dunklem oder buntem Hintergrund in „Dokument“ ansehen: Die Schrift sollte schwarz auf weißem Grund stehen.
+
+## Abnahme
+- 2026-11-16: Vom Nutzer abgenommen (v0.3.1). F03 ist fertig.
