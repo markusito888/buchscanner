@@ -84,3 +84,6 @@ Keine. Fehler 1 und 2 der ersten QA sind behoben.
 ## Was du selbst kurz testen solltest
 - Eine Buchseite mit Bild darauf auf „Dokument“ ansehen: Ist das für dich in Ordnung oder störend?
 - Einen normalen Scan (Vertrag, Brief) mit „Farbe“ und „Dokument“ vergleichen.
+
+## Abnahme – 2026-11-16
+Vom Nutzer abgenommen (Version 0.2.1). F02 ist fertig.

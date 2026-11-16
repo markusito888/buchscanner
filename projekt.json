@@ -12,8 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F02 abnehmen",
-    "/spec F03 – Bibliothek (dauerhaft speichern)"
+    "/spec F03 – Bibliothek (Scans dauerhaft auf dem iPhone speichern)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -60,6 +59,10 @@
     {
       "datum": "2026-11-16",
       "text": "Erneute QA F02: 18 von 18 AK bestanden, Live-Kamera am iPhone 2160 × 3840."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "F02 Seiten aufnehmen abgenommen und fertig."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

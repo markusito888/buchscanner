@@ -1,5 +1,5 @@
 # F02 Seiten aufnehmen
-**Status:** spezifiziert · **Stufe:** light · **Abhängig von:** F01
+**Status:** fertig · **Stufe:** light · **Abhängig von:** F01
 
 ## Ziel
 Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange Dokumente gibt es eine schnelle Live-Kamera in der App: Seite für Seite auslösen, ohne Unterbrechung. Für den normalen Scan dient die iPhone-Kamera, denn sie liefert die beste Bildqualität. Danach lassen sich die Seiten in einer Übersicht ansehen, umsortieren, löschen, neu aufnehmen und im Kontrast verbessern. Speichern, Texterkennung und Export folgen in F03 bis F06.
@@ -12,30 +12,30 @@ Seiten mit dem iPhone aufnehmen, und zwar auf zwei Wegen. Für Bücher und lange
 
 ## Akzeptanzkriterien
 **Buch / Dokument mit Text (Live-Kamera)**
-- [ ] AK1: Angenommen die Startseite ist offen, wenn man „Buch / Dokument mit Text“ antippt, dann öffnet sich innerhalb von 2 s ein Vollbild mit dem Live-Bild der hinteren Kamera, einem runden Auslöser (mindestens 72 px), einem Zähler „0 Seiten“ und dem Knopf „Fertig“. Beim allerersten Mal fragt iOS nach der Kamera-Erlaubnis.
-- [ ] AK2: Angenommen die Live-Kamera ist offen, wenn man den Auslöser antippt, dann gibt es eine deutliche Rückmeldung (Bild hellt kurz auf, die Ränder leuchten ca. 0,45 s weiß auf, der Zähler hüpft kurz grün), der Zähler steigt um 1, unten erscheint ein kleines Vorschaubild der letzten Seite, und nach höchstens 1 s kann die nächste Seite ausgelöst werden.
-- [ ] AK3: Die Seite wird in der höchsten Auflösung gespeichert, die Safari für das Kamerabild liefert. Angefragt wird 3840 × 2160, bei Hochformat also mindestens 1080 px Breite. Die tatsächliche Größe ist in der Großansicht ablesbar (z. B. „2160 × 3840“).
-- [ ] AK4: Angenommen die Kamera-Erlaubnis wurde abgelehnt oder die Kamera ist nicht verfügbar, dann erscheint statt des Kamerabilds der Text „Kein Zugriff auf die Kamera“ mit einer kurzen Anleitung: in den iPhone-Einstellungen unter Safari → Kamera auf „Erlauben“ stellen bzw. unter „Website-Einstellungen“. Dazu kommt der Knopf „Zurück“. Die App stürzt nicht ab.
-- [ ] AK5: Angenommen es wurden Seiten aufgenommen, wenn man „Fertig“ antippt, dann schaltet sich die Kamera ab (grüner Punkt oben verschwindet) und die Seitenübersicht öffnet sich. „Fertig“ bei 0 Seiten führt zurück zur Startseite.
-- [ ] AK6: Angenommen die Übersicht eines Buch-Scans ist offen, wenn man „+ Seiten“ antippt, dann öffnet sich wieder die Live-Kamera. Neue Seiten werden hinten angehängt, und der Zähler zählt ab der bisherigen Seitenzahl weiter.
+- [x] AK1: Angenommen die Startseite ist offen, wenn man „Buch / Dokument mit Text“ antippt, dann öffnet sich innerhalb von 2 s ein Vollbild mit dem Live-Bild der hinteren Kamera, einem runden Auslöser (mindestens 72 px), einem Zähler „0 Seiten“ und dem Knopf „Fertig“. Beim allerersten Mal fragt iOS nach der Kamera-Erlaubnis.
+- [x] AK2: Angenommen die Live-Kamera ist offen, wenn man den Auslöser antippt, dann gibt es eine deutliche Rückmeldung (Bild hellt kurz auf, die Ränder leuchten ca. 0,45 s weiß auf, der Zähler hüpft kurz grün), der Zähler steigt um 1, unten erscheint ein kleines Vorschaubild der letzten Seite, und nach höchstens 1 s kann die nächste Seite ausgelöst werden.
+- [x] AK3: Die Seite wird in der höchsten Auflösung gespeichert, die Safari für das Kamerabild liefert. Angefragt wird 3840 × 2160, bei Hochformat also mindestens 1080 px Breite. Die tatsächliche Größe ist in der Großansicht ablesbar (z. B. „2160 × 3840“).
+- [x] AK4: Angenommen die Kamera-Erlaubnis wurde abgelehnt oder die Kamera ist nicht verfügbar, dann erscheint statt des Kamerabilds der Text „Kein Zugriff auf die Kamera“ mit einer kurzen Anleitung: in den iPhone-Einstellungen unter Safari → Kamera auf „Erlauben“ stellen bzw. unter „Website-Einstellungen“. Dazu kommt der Knopf „Zurück“. Die App stürzt nicht ab.
+- [x] AK5: Angenommen es wurden Seiten aufgenommen, wenn man „Fertig“ antippt, dann schaltet sich die Kamera ab (grüner Punkt oben verschwindet) und die Seitenübersicht öffnet sich. „Fertig“ bei 0 Seiten führt zurück zur Startseite.
+- [x] AK6: Angenommen die Übersicht eines Buch-Scans ist offen, wenn man „+ Seiten“ antippt, dann öffnet sich wieder die Live-Kamera. Neue Seiten werden hinten angehängt, und der Zähler zählt ab der bisherigen Seitenzahl weiter.
 
 **Normaler Scan (iPhone-Kamera)**
-- [ ] AK7: Angenommen die Startseite ist offen, wenn man „Normaler Scan“ antippt, dann öffnet sich direkt die iPhone-Kamera (ohne Auswahlmenü). Nach „Foto benutzen“ erscheint die Seitenübersicht mit dieser einen Seite in voller Fotoauflösung.
-- [ ] AK8: Angenommen die Übersicht eines normalen Scans ist offen, wenn man „+ Seite“ antippt, dann öffnet sich wieder die iPhone-Kamera, und das neue Foto wird hinten angehängt.
-- [ ] AK9: Bricht man die iPhone-Kamera ab, ändert sich nichts: Beim ersten Foto geht es zurück zur Startseite, sonst bleibt die Übersicht unverändert.
+- [x] AK7: Angenommen die Startseite ist offen, wenn man „Normaler Scan“ antippt, dann öffnet sich direkt die iPhone-Kamera (ohne Auswahlmenü). Nach „Foto benutzen“ erscheint die Seitenübersicht mit dieser einen Seite in voller Fotoauflösung.
+- [x] AK8: Angenommen die Übersicht eines normalen Scans ist offen, wenn man „+ Seite“ antippt, dann öffnet sich wieder die iPhone-Kamera, und das neue Foto wird hinten angehängt.
+- [x] AK9: Bricht man die iPhone-Kamera ab, ändert sich nichts: Beim ersten Foto geht es zurück zur Startseite, sonst bleibt die Übersicht unverändert.
 
 **Seitenübersicht und Bearbeiten (beide Arten)**
-- [ ] AK10: Die Übersicht zeigt oben die Art („Buch / Dokument“ bzw. „Normaler Scan“) und die Seitenzahl. Darunter stehen die Vorschaubilder in einem Raster mit 3 Spalten bei 375 px, jedes mit seiner Seitennummer. Dazu gibt es den Kontrast-Umschalter „Farbe | Grau | Dokument“ und den Hinweis „Noch kein Speichern: Seiten gehen beim Schließen der App verloren.“
-- [ ] AK11: Angenommen die Übersicht ist offen, wenn man ein Vorschaubild antippt, dann öffnet sich die Großansicht mit „Seite X von Y“, dem Bild in voller Breite und den Knöpfen „‹ Nach vorne“, „Nach hinten ›“, „Neu aufnehmen“, „Löschen“ und „Zurück“. Alle Knöpfe sind mindestens 44 px hoch.
-- [ ] AK12: „‹ Nach vorne“ tauscht die Seite mit der vorherigen und „Nach hinten ›“ mit der nächsten. Die Großansicht bleibt bei dieser Seite, und „Seite X von Y“ ändert sich passend. Auf Seite 1 ist „Nach vorne“ ausgegraut, auf der letzten Seite „Nach hinten“.
-- [ ] AK13: „Löschen“ fragt „Seite X löschen?“ (Löschen / Abbrechen). Nach dem Löschen geht es zurück zur Übersicht, und die Nummern rücken nach. Wird die letzte verbleibende Seite gelöscht, geht es zur Startseite.
-- [ ] AK14: „Neu aufnehmen“ öffnet die passende Kamera: bei Buch-Scans die Live-Kamera für genau ein Bild, danach direkt zurück, bei normalen Scans die iPhone-Kamera. Das neue Bild ersetzt die Seite an derselben Stelle. Abbrechen lässt die alte Seite stehen.
-- [ ] AK15: Der Kontrast-Umschalter gilt für alle Seiten des Scans. Voreingestellt ist bei Buch-Scans „Dokument“, bei normalen Scans „Farbe“. „Grau“ zeigt Graustufen. „Dokument“ zeigt Graustufen mit kräftigem Kontrast: Papier nahezu weiß, Schrift nahezu schwarz. Ein Wechsel aktualisiert alle Vorschaubilder und die Großansicht innerhalb von 3 s bei 50 Seiten. Die Originalaufnahme bleibt erhalten, ein Zurückschalten auf „Farbe“ zeigt wieder das unveränderte Foto.
-- [ ] AK16: Angenommen in der Übersicht wird „Schließen“ angetippt, dann fragt die App „Scan verwerfen? Die Seiten werden noch nicht gespeichert.“ (Verwerfen / Abbrechen). Bei „Verwerfen“ geht es zur Startseite, und alle Seiten sind aus dem Speicher entfernt.
+- [x] AK10: Die Übersicht zeigt oben die Art („Buch / Dokument“ bzw. „Normaler Scan“) und die Seitenzahl. Darunter stehen die Vorschaubilder in einem Raster mit 3 Spalten bei 375 px, jedes mit seiner Seitennummer. Dazu gibt es den Kontrast-Umschalter „Farbe | Grau | Dokument“ und den Hinweis „Noch kein Speichern: Seiten gehen beim Schließen der App verloren.“
+- [x] AK11: Angenommen die Übersicht ist offen, wenn man ein Vorschaubild antippt, dann öffnet sich die Großansicht mit „Seite X von Y“, dem Bild in voller Breite und den Knöpfen „‹ Nach vorne“, „Nach hinten ›“, „Neu aufnehmen“, „Löschen“ und „Zurück“. Alle Knöpfe sind mindestens 44 px hoch.
+- [x] AK12: „‹ Nach vorne“ tauscht die Seite mit der vorherigen und „Nach hinten ›“ mit der nächsten. Die Großansicht bleibt bei dieser Seite, und „Seite X von Y“ ändert sich passend. Auf Seite 1 ist „Nach vorne“ ausgegraut, auf der letzten Seite „Nach hinten“.
+- [x] AK13: „Löschen“ fragt „Seite X löschen?“ (Löschen / Abbrechen). Nach dem Löschen geht es zurück zur Übersicht, und die Nummern rücken nach. Wird die letzte verbleibende Seite gelöscht, geht es zur Startseite.
+- [x] AK14: „Neu aufnehmen“ öffnet die passende Kamera: bei Buch-Scans die Live-Kamera für genau ein Bild, danach direkt zurück, bei normalen Scans die iPhone-Kamera. Das neue Bild ersetzt die Seite an derselben Stelle. Abbrechen lässt die alte Seite stehen.
+- [x] AK15: Der Kontrast-Umschalter gilt für alle Seiten des Scans. Voreingestellt ist bei Buch-Scans „Dokument“, bei normalen Scans „Farbe“. „Grau“ zeigt Graustufen. „Dokument“ zeigt Graustufen mit kräftigem Kontrast: Papier nahezu weiß, Schrift nahezu schwarz. Ein Wechsel aktualisiert alle Vorschaubilder und die Großansicht innerhalb von 3 s bei 50 Seiten. Die Originalaufnahme bleibt erhalten, ein Zurückschalten auf „Farbe“ zeigt wieder das unveränderte Foto.
+- [x] AK16: Angenommen in der Übersicht wird „Schließen“ angetippt, dann fragt die App „Scan verwerfen? Die Seiten werden noch nicht gespeichert.“ (Verwerfen / Abbrechen). Bei „Verwerfen“ geht es zur Startseite, und alle Seiten sind aus dem Speicher entfernt.
 
 **Allgemein**
-- [ ] AK17: Im Buch-Modus lassen sich 100 Seiten hintereinander aufnehmen, ohne dass die App abstürzt, neu lädt oder merklich langsamer auslöst (AK2 gilt auch bei Seite 100). Geprüft wird auf dem iPhone des Nutzers.
-- [ ] AK18: Alles läuft ohne Internet und ohne Anfragen an fremde Server. Kein Bild verlässt das iPhone. Bildlauf gibt es nur senkrecht in der Übersicht, kein waagerechter Bildlauf bei 375 px. Hell und Dunkel werden wie in F01 befolgt (das Kamera-Vollbild ist immer dunkel).
+- [x] AK17: Im Buch-Modus lassen sich 100 Seiten hintereinander aufnehmen, ohne dass die App abstürzt, neu lädt oder merklich langsamer auslöst (AK2 gilt auch bei Seite 100). Geprüft wird auf dem iPhone des Nutzers.
+- [x] AK18: Alles läuft ohne Internet und ohne Anfragen an fremde Server. Kein Bild verlässt das iPhone. Bildlauf gibt es nur senkrecht in der Übersicht, kein waagerechter Bildlauf bei 375 px. Hell und Dunkel werden wie in F01 befolgt (das Kamera-Vollbild ist immer dunkel).
 
 ## Nicht im Umfang
 - Dauerhaftes Speichern, Bibliothek, Scan benennen (F03). Bis dahin sind die Seiten nach dem Schließen der App weg.
