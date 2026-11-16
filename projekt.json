@@ -12,8 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F01 auf dem iPhone testen (Home-Bildschirm, Vollbild, Flugmodus, Update-Hinweis mit Version 0.1.1)",
-    "/qa F01",
+    "F01 abnehmen: Icon/Vollbild, Notch und Flugmodus-Start am iPhone bestätigen",
     "/spec F02 – Seiten aufnehmen"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
@@ -33,6 +32,10 @@
     {
       "datum": "2026-11-16",
       "text": "Repo markusito888/buchscanner angelegt, GitHub Pages eingeschaltet, F01 live geprüft (kein Bildlauf, keine Fremd-Anfragen, offline ok)."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Version 0.1.1 veröffentlicht, Update-Hinweis am iPhone bestätigt; QA F01: 7 von 10 AK belegt, 0 Fehler, Rest wartet auf iPhone-Abnahme."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
