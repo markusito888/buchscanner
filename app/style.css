@@ -214,6 +214,11 @@ button:disabled { opacity: 0.35; }
 }
 .segment button[aria-pressed="true"] { background: var(--flaeche); font-weight: 600; box-shadow: var(--schatten); }
 .segment { margin-bottom: 16px; }
+.fuss-knoepfe { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
+.knopf-zweit { background: var(--flaeche); border-color: var(--rand); color: var(--akzent); }
+.ganze-breite { grid-column: 1 / -1; }
+.wahl-knoepfe { display: flex; flex-direction: column; gap: 10px; }
+#fortschritt { text-align: center; }
 .scan-loeschen { display: block; width: 100%; margin-top: 28px; }
 .knopf-akzent { background: var(--akzent); border-color: var(--akzent); color: var(--akzent-text); }
 

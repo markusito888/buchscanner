@@ -93,7 +93,10 @@
       <button id="scan-loeschen" class="knopf-klein knopf-gefahr scan-loeschen" type="button">Scan löschen</button>
     </div>
     <div class="fuss-leiste">
-      <button id="ueb-plus" class="knopf-voll" type="button">+ Seiten</button>
+      <div class="fuss-knoepfe">
+        <button id="ueb-plus" class="knopf-voll" type="button">+ Seiten</button>
+        <button id="ueb-speichern" class="knopf-voll knopf-zweit" type="button" hidden>Speichern</button>
+      </div>
     </div>
   </section>
 
@@ -115,6 +118,7 @@
       <button id="gross-nach" class="knopf-klein" type="button">Nach hinten ›</button>
       <button id="gross-neu" class="knopf-klein" type="button">Neu aufnehmen</button>
       <button id="gross-loeschen" class="knopf-klein knopf-gefahr" type="button">Löschen</button>
+      <button id="gross-sichern" class="knopf-klein ganze-breite" type="button" hidden>Seite als Bild sichern</button>
     </div>
   </section>
 
@@ -144,6 +148,27 @@
     </form>
   </dialog>
 
+  <!-- Speichern: Auswahl -->
+  <dialog id="speichern-wahl" class="frage">
+    <form method="dialog">
+      <p>Speichern als …</p>
+      <div class="wahl-knoepfe">
+        <button value="pdf" type="submit" class="knopf-klein knopf-akzent">Als PDF (Dateien)</button>
+        <button value="bilder" type="submit" class="knopf-klein knopf-akzent">Als Bilder (Fotos)</button>
+        <button value="nein" type="submit" class="knopf-klein">Abbrechen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Speichern: Fortschritt und Teilen -->
+  <dialog id="fortschritt" class="frage">
+    <p id="fortschritt-text"></p>
+    <div class="wahl-knoepfe">
+      <button id="fortschritt-teilen" type="button" class="knopf-klein knopf-akzent" hidden>Fertig – Teilen</button>
+      <button id="fortschritt-abbrechen" type="button" class="knopf-klein">Abbrechen</button>
+    </div>
+  </dialog>
+
   <div id="hinweis" class="hinweis" role="status" aria-live="polite" hidden></div>
 
   <div id="update" class="update" role="alert" hidden>
@@ -153,6 +178,7 @@
 
   <script src="app.js"></script>
   <script src="speicher.js"></script>
+  <script src="pdf.js"></script>
   <script src="scan.js"></script>
 </body>
 </html>

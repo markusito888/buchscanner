@@ -1,6 +1,6 @@
 // Buchscanner – Service Worker (Offline-Cache).
 // Jede Änderung dieser Datei gilt als neue Version. Versionsnummer auch in app.js ändern.
-const VERSION = '0.3.1';
+const VERSION = '0.4.0';
 const CACHE = `buchscanner-${VERSION}`;
 
 const DATEIEN = [
@@ -9,6 +9,7 @@ const DATEIEN = [
   'style.css',
   'app.js',
   'speicher.js',
+  'pdf.js',
   'scan.js',
   'manifest.webmanifest',
   'icons/icon.svg',

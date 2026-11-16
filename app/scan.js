@@ -599,6 +599,7 @@
     const teil = (t) => { const e = document.createElement('span'); e.className = 'ganz'; e.textContent = t; return e; };
     $('ueb-anzahl').replaceChildren(teil(ARTEN[scan.art]), ' · ', teil(seitenText(scan.seiten.length)));
     $('ueb-plus').textContent = scan.art === 'buch' ? '+ Seiten' : '+ Seite';
+    $('ueb-speichern').hidden = scan.art !== 'normal';
     document.querySelectorAll('[data-kontrast]').forEach((k) => {
       k.setAttribute('aria-pressed', String(k.dataset.kontrast === scan.kontrast));
     });
@@ -707,6 +708,7 @@
     $('gross-masse').textContent = `${seite.breite} × ${seite.hoehe}`;
     $('gross-vor').disabled = aktuell === 0;
     $('gross-nach').disabled = aktuell === scan.seiten.length - 1;
+    $('gross-sichern').hidden = scan.art !== 'normal';
     zeichneGross(seite);
   }
 
@@ -758,6 +760,116 @@
     if (scan.seiten.length === 0) { scanSchliessen(); return; }
     zeigeUebersicht();
   });
+
+  // ---------- Speichern als PDF oder Bilder (normaler Scan) ----------
+
+  const EXPORT_MAX = 3000; // lange Seite der gespeicherten Bilder in px
+  let exportLauf = 0;
+  let exportDateien = null;
+  const fortschritt = $('fortschritt');
+
+  // Unerlaubte Zeichen im Dateinamen durch „-“ ersetzen
+  const dateiname = (t) => t.replace(/[\\/:*?"<>|]/g, '-').trim() || 'Scan';
+
+  // Seite in der gewählten Kontrast-Stufe als JPEG (höchstens 3000 px, ohne Foto-Metadaten)
+  async function seiteAlsJpeg(seite, modus) {
+    await seite.bereit;
+    const img = await ladeBild(seite.original);
+    const f = Math.min(1, EXPORT_MAX / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = neuesCanvas(Math.max(1, Math.round(img.naturalWidth * f)), Math.max(1, Math.round(img.naturalHeight * f)));
+    const ctx = c.getContext('2d', { willReadFrequently: modus !== 'farbe' });
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    filtere(ctx, c.width, c.height, modus);
+    const blob = await alsBlob(c, 0.85);
+    c.width = 1; c.height = 1; // Speicher freigeben
+    return blob;
+  }
+
+  // art: 'pdf' | 'bilder'; nummern: Seiten (Index), die gespeichert werden
+  async function speichern(art, nummern) {
+    const s = scan;
+    const lauf = ++exportLauf;
+    exportDateien = null;
+    $('fortschritt-teilen').hidden = true;
+    $('fortschritt-abbrechen').hidden = false;
+    fortschritt.showModal();
+    const name = dateiname(s.name);
+    const modus = s.kontrast;
+    try {
+      const jpegs = [];
+      for (let k = 0; k < nummern.length; k++) {
+        $('fortschritt-text').textContent = `Wird erstellt … Seite ${k + 1} von ${nummern.length}`;
+        await new Promise((ok) => setTimeout(ok, 30)); // Anzeige aktualisieren, Abbrechen zulassen
+        if (lauf !== exportLauf) return;
+        jpegs.push(await seiteAlsJpeg(s.seiten[nummern[k]], modus));
+      }
+      if (lauf !== exportLauf) return;
+      if (art === 'pdf') {
+        const daten = await Promise.all(jpegs.map((b) => b.arrayBuffer().then((a) => new Uint8Array(a))));
+        exportDateien = [new File([PDF.erzeugen(daten, s.name)], `${name}.pdf`, { type: 'application/pdf' })];
+      } else {
+        exportDateien = jpegs.map((b, k) => new File([b], `${name} – Seite ${nummern[k] + 1}.jpg`, { type: 'image/jpeg' }));
+      }
+      if (lauf !== exportLauf) return;
+      $('fortschritt-text').textContent = art === 'pdf' ? 'PDF ist fertig.' : (exportDateien.length === 1 ? 'Bild ist fertig.' : `${exportDateien.length} Bilder sind fertig.`);
+      $('fortschritt-teilen').hidden = false;
+    } catch (fehler) {
+      console.warn('Speichern:', fehler);
+      if (lauf !== exportLauf) return;
+      exportLauf++;
+      fortschritt.close();
+      zeigeHinweis('Speichern fehlgeschlagen – bitte noch einmal versuchen');
+    }
+  }
+
+  function herunterladen(dateien) {
+    dateien.forEach((datei, k) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(datei);
+        a.download = datei.name;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      }, k * 300);
+    });
+  }
+
+  $('fortschritt-teilen').addEventListener('click', async () => {
+    const dateien = exportDateien;
+    exportDateien = null;
+    fortschritt.close();
+    if (!dateien) return;
+    if (navigator.canShare && navigator.canShare({ files: dateien })) {
+      try {
+        await navigator.share({ files: dateien });
+      } catch (fehler) {
+        if (fehler.name !== 'AbortError') { console.warn('Teilen:', fehler); zeigeHinweis('Teilen fehlgeschlagen – bitte noch einmal versuchen'); }
+      }
+    } else {
+      herunterladen(dateien);
+    }
+  });
+
+  // Abbrechen (Knopf oder Escape): Erzeugen beenden, nichts weiter tun
+  $('fortschritt-abbrechen').addEventListener('click', () => fortschritt.close());
+  fortschritt.addEventListener('close', () => { exportLauf++; $('fortschritt-teilen').hidden = true; });
+
+  $('ueb-speichern').addEventListener('click', () => {
+    if (!scan || !scan.seiten.length) return;
+    const wahl = $('speichern-wahl');
+    wahl.returnValue = '';
+    wahl.addEventListener('close', () => {
+      if (!scan) return;
+      const alle = scan.seiten.map((_, k) => k);
+      if (wahl.returnValue === 'pdf') speichern('pdf', alle);
+      else if (wahl.returnValue === 'bilder') speichern('bilder', alle);
+    }, { once: true });
+    wahl.showModal();
+  });
+
+  $('gross-sichern').addEventListener('click', () => { if (scan) speichern('bilder', [aktuell]); });
 
   // ---------- Startseite: Meine Scans ----------
 
