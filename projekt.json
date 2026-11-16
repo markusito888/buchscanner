@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/spec F03 – Bibliothek (Scans dauerhaft auf dem iPhone speichern)"
+    "/spec F03 – Bibliothek (dauerhaft speichern, Buch-Bilder nur vorübergehend)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -63,6 +63,10 @@
     {
       "datum": "2026-11-16",
       "text": "F02 Seiten aufnehmen abgenommen und fertig."
+    },
+    {
+      "datum": "2026-11-16",
+      "text": "Plan geändert: Buch-Scan speichert dauerhaft nur Text (Export .md und EPUB für Kindle), Bilder nur beim normalen Scan."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"
