@@ -1098,13 +1098,28 @@
   $('gross-text').addEventListener('blur', textSichern);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') textSichern(); });
 
-  // Bild für die Erkennung: Fassung „Dokument“, lange Seite höchstens 2400 px
-  async function ocrBild(original) {
+  // Bild für die Erkennung: Fassung „Dokument“, lange Seite höchstens 2400 px.
+  // drehung: 0/90/180/270 Grad; glaetten: Faktor zum Verwischen von Rasterpunkten (klein und wieder groß rechnen)
+  async function ocrBild(original, { drehung = 0, glaetten = 0 } = {}) {
     const img = await ladeBild(original);
     const f = Math.min(1, OCR_MAX / Math.max(img.naturalWidth, img.naturalHeight));
-    const c = neuesCanvas(Math.max(1, Math.round(img.naturalWidth * f)), Math.max(1, Math.round(img.naturalHeight * f)));
+    const b = Math.max(1, Math.round(img.naturalWidth * f)), h = Math.max(1, Math.round(img.naturalHeight * f));
+    let quelle = img;
+    if (glaetten) {
+      quelle = neuesCanvas(Math.max(1, Math.round(b * glaetten)), Math.max(1, Math.round(h * glaetten)));
+      const qx = quelle.getContext('2d');
+      qx.imageSmoothingQuality = 'high';
+      qx.drawImage(img, 0, 0, quelle.width, quelle.height);
+    }
+    const quer = drehung === 90 || drehung === 270;
+    const c = neuesCanvas(quer ? h : b, quer ? b : h);
     const ctx = c.getContext('2d', { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0, c.width, c.height);
+    ctx.imageSmoothingQuality = 'high';
+    ctx.translate(c.width / 2, c.height / 2);
+    ctx.rotate((drehung * Math.PI) / 180);
+    ctx.drawImage(quelle, -b / 2, -h / 2, b, h);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (quelle !== img) { quelle.width = 1; quelle.height = 1; }
     filtere(ctx, c.width, c.height, 'dokument');
     return c;
   }

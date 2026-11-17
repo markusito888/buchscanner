@@ -120,6 +120,10 @@
     {
       "datum": "2026-11-17",
       "text": "Version 0.5.0 (F05 Texterkennung) veröffentlicht, Erkennung auf der Live-Seite geprüft."
+    },
+    {
+      "datum": "2026-11-17",
+      "text": "F05 nachgebessert (v0.5.1): gedrehte Seiten (iPhone quer) und Farbflächen im Rasterdruck werden durch weitere Versuche erkannt."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

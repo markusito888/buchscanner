@@ -61,7 +61,9 @@ const Texterkennung = (() => {
       const sprache = s.sprache || 'deu';
       const id = s.seiten.find((p) => {
         const t = vorhanden.get(p);
-        return (!t || (!t.vonHand && t.sprache !== sprache)) && (fehlversuche.get(p) || 0) < 2;
+        // Ohne Text, andere Sprache, oder unsicher aus Version 0.5.0 (noch ohne Dreh- und Glätt-Versuche)
+        const alt = t && !t.vonHand && t.drehung === undefined && t.sicherheit < 70;
+        return (!t || (!t.vonHand && t.sprache !== sprache) || alt) && (fehlversuche.get(p) || 0) < 2;
       });
       if (id) return { scanId: s.id, seitenId: id, sprache };
     }
@@ -129,10 +131,9 @@ const Texterkennung = (() => {
           melden({ art: 'laeuft', scanId, sprache });
           const daten = await Speicher.seiteLaden(seitenId);
           if (!daten || kameraOffen) continue; // Seite weg oder Kamera inzwischen offen
-          const bild = await vorbereiten(daten.original);
-          const { data } = await worker.recognize(bild, {}, { text: true, blocks: true });
-          bild.width = 1; bild.height = 1;
-          const eintrag = { id: seitenId, text: aufbereiten(data.blocks), sicherheit: Math.round(data.confidence || 0), vonHand: false, sprache };
+          const best = await erkennen(daten.original);
+          if (!best) continue; // Kamera wurde geöffnet: später noch einmal
+          const eintrag = { id: seitenId, text: aufbereiten(best.data.blocks), sicherheit: Math.round(best.sicherheit), vonHand: false, sprache, drehung: best.drehung };
           if (await Speicher.textSetzen(eintrag)) gespeichert(scanId, eintrag);
           fehlversuche.delete(seitenId);
         } catch (fehler) {
@@ -154,6 +155,26 @@ const Texterkennung = (() => {
     } finally {
       laeuft = false;
     }
+  }
+
+  // Erst normal erkennen. Ist das Ergebnis unsicher (unter 70 %), weitere Versuche in dieser Reihenfolge:
+  // um 90° bzw. 270° gedreht (iPhone quer gehalten bei Hochformat-Sperre), geglättet gegen Rasterpunkte
+  // von Farbflächen, auf dem Kopf. Das sicherste Ergebnis gewinnt. Fast leere Seiten: kein weiterer Versuch.
+  const VERSUCHE = [{ drehung: 0 }, { drehung: 90 }, { drehung: 270 }, { glaetten: 0.35 }, { drehung: 180 }];
+  async function erkennen(original) {
+    let best = null;
+    for (const v of VERSUCHE) {
+      if (kameraOffen) return null;
+      const art = { drehung: v.glaetten ? best.drehung : v.drehung, glaetten: v.glaetten || 0 };
+      const bild = await vorbereiten(original, art);
+      const { data } = await worker.recognize(bild, {}, { text: true, blocks: true });
+      bild.width = 1; bild.height = 1;
+      const sicherheit = data.confidence || 0;
+      if (!best || sicherheit > best.sicherheit) best = { data, sicherheit, drehung: art.drehung };
+      if (best.sicherheit >= 70) break;
+      if (!best.data.text || best.data.text.trim().split(/\s+/).length < 3) break; // (fast) leere Seite
+    }
+    return best;
   }
 
   // ---------- Text aufbereiten ----------

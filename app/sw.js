@@ -1,6 +1,6 @@
 // Buchscanner – Service Worker (Offline-Cache).
 // Jede Änderung dieser Datei gilt als neue Version. Versionsnummer auch in app.js ändern.
-const VERSION = '0.5.0';
+const VERSION = '0.5.1';
 const CACHE = `buchscanner-${VERSION}`;
 // Texterkennung (Tesseract): groß, wird erst beim ersten Gebrauch geladen und bleibt bei App-Updates erhalten
 const TESS_CACHE = 'texterkennung-7.0.0';

@@ -67,3 +67,13 @@ Die Live-Kamera wurde mit einer Video-Datei gespeist, die eine Buchseite mit bek
   - F03 und F04 sind bestanden.
   - Das Nachstellen von „Speicher voll“ mit `Storage.overrideQuotaForOrigin` greift in Chrome nicht mehr (die Grenze bleibt bei 10 GB, schon vor der Texterkennung). Deshalb wurde der Fehler direkt nachgestellt (`QuotaExceededError` beim Speichern). Die Meldung erscheint, die Seite wird verworfen, und die nächste Seite wird normal gespeichert.
 - **Nicht prüfbar am Mac:** Tempo und Wärme am iPhone (AK13: 100 Seiten ≤ 15 min), echte Buchseiten des Nutzers, Wake Lock in iOS, welcher Kern dort geladen wird (vermutlich SIMD).
+
+## Nachbesserung v0.5.1 (2026-11-17): gedrehte Seiten und Farbflächen
+Beim iPhone-Test lieferten einige Seiten nur Zeichensalat. Sie bekamen zwar ein „!“, aber keinen brauchbaren Text. Ursache: Die Seite lag um 90° gedreht im Bild, weil das iPhone quer gehalten wurde, während die Hochformat-Sperre an war. Dazu kommt, dass Farbflächen im Rasterdruck nach dem Filter als Punktmuster stehen bleiben.
+- [x] 7. Ist eine Seite unsicher (unter 70 %), versucht die App es erneut: um 90° gedreht, um 270° gedreht, geglättet gegen Rasterpunkte (klein und wieder groß rechnen, Faktor 0,35), auf dem Kopf. Das sicherste Ergebnis gewinnt, und die Drehung wird beim Text gemerkt. Fast leere Seiten (weniger als 3 Wörter) bekommen keine weiteren Versuche. → AK10, AK12
+- [x] 8. Unsichere Texte aus Version 0.5.0, die noch keine Drehung gemerkt haben, werden einmal neu erkannt. Handkorrekturen bleiben unberührt. → AK4
+- Gemessen:
+  - Testseite um 90° gedreht: erkannt mit Drehung 90°, Sicherheit 90 %, 3 % Fehler, ca. 10–13 s pro Seite (zwei Durchgänge).
+  - Orange Rasterfläche mit grobem Raster: Fehler von 42 % auf 12 % gesunken.
+  - Normale Seiten: unverändert, 0 % Fehler, kein zusätzlicher Durchgang.
+- Annahme: Die Anzeige des Bildes bleibt gedreht. Das Bild gerade zu drehen gehört zu F07 (Seiten gerade ziehen).
