@@ -12,7 +12,7 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "F05 am iPhone mit echten Buchseiten testen (Tempo, Qualität, unsichere Seiten)",
+    "Version 0.5.1 am iPhone testen (gedrehte/bunte Seiten, Tempo)",
     "/qa F05"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
