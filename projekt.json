@@ -12,8 +12,9 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/umsetzen F05 – Fehler beheben: neu gespeicherte Seiten stoßen die Erkennung an",
-    "Danach erneut /qa F05"
+    "Version 0.5.3 hochladen",
+    "F05 am iPhone abnehmen (100 Seiten ≤ 15 min)",
+    "Danach /spec F06 – Export .md und EPUB"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -132,6 +133,10 @@
     {
       "datum": "2026-11-18",
       "text": "QA F05: 13 von 15 AK, 1 mittlerer Fehler (neu aufgenommene/zuletzt gespeicherte Seite wird nicht erkannt)."
+    },
+    {
+      "datum": "2026-11-18",
+      "text": "F05 Fehler behoben (v0.5.3): neu gespeicherte Seiten stoßen die Erkennung an; erneute QA fertig."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

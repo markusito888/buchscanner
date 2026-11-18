@@ -15,6 +15,7 @@ const Texterkennung = (() => {
   let kameraOffen = false;
   let laeuft = false;
   let wecker = null; // weckt die wartende Schleife
+  let nochmal = false; // Anstoß kam, während die Schleife gerade nicht wartete
   let worker = null;
   let workerSprache = null;
   let wachSperre = null;
@@ -32,7 +33,7 @@ const Texterkennung = (() => {
   }
 
   function anstossen() {
-    if (wecker) { const w = wecker; wecker = null; w(); } else if (!laeuft) schleife();
+    if (wecker) { const w = wecker; wecker = null; w(); } else if (!laeuft) schleife(); else nochmal = true;
   }
 
   function kamera(offen) {
@@ -48,6 +49,7 @@ const Texterkennung = (() => {
   // ---------- Schleife ----------
 
   const warten = (ms) => new Promise((ok) => {
+    if (nochmal) { nochmal = false; ok(); return; } // inzwischen gab es neue Arbeit
     wecker = ok;
     if (ms) setTimeout(() => { if (wecker === ok) { wecker = null; ok(); } }, ms);
   });

@@ -69,3 +69,11 @@ Dazu kommen der iPhone-Screenshot des Nutzers (v0.5.1) und die F03/F04-Regressio
 - Ein Buch mit 10–20 Seiten scannen, dabei nach der letzten Aufnahme sofort „Fertig“ tippen. Erreicht der Status „alle N Seiten erkannt“? (Wegen Fehler 1 bleibt evtl. die letzte Seite hängen.)
 - 100 Seiten am Stück scannen und die Zeit bis „alle 100 Seiten erkannt“ messen (Ziel ≤ 15 min). Wird das iPhone sehr warm?
 - Eine Seite in „Text“ korrigieren, die App schließen und wieder öffnen: Ist die Korrektur noch da?
+
+## Erneute QA – 2026-11-18 (v0.5.3)
+**Urteil:** fertig
+**Ergebnis:** 14 von 15 AK bestanden, AK13 nur am iPhone prüfbar · 0 Fehler offen
+- ✅ AK9 – Fehler 1 ist behoben. Nach „Neu aufnehmen“ einer korrigierten Seite steht zuerst „Text wird noch erkannt …“, dann nach ca. 5 s der neue Text („Als Gregor an jenem Morgen …“, `vonHand: false`).
+- ✅ AK1 – „Fertig“ direkt nach der letzten von 4 schnellen Aufnahmen: Der Status endet bei „Text: alle 4 Seiten erkannt“ (16,7 s).
+- Regression: `f05test.mjs` und `f05qa.mjs` komplett erneut ausgeführt, alle Werte wie vorher (Fehlerquote 0 %, Vorrang, Hintergrund, Offline-Sprache, Altdaten, „Belegt“, Löschen). Keine Konsolenfehler, keine Fremd-Anfragen.
+- ⚠️ AK13 – offen am iPhone: 100 Seiten in höchstens 15 min.

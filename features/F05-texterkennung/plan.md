@@ -83,3 +83,10 @@ Beim iPhone-Test lieferten einige Seiten nur Zeichensalat. Sie bekamen zwar ein 
 - Geprüft am Text vom iPhone-Screenshot des Nutzers: Alle Striche und Symbolreste sind weg. Echte unsichere Wörter wie „[?Schließlich.]“ bleiben markiert.
 - Regression F05: unverändert, 0 % Fehler, gedrehte Seite 3 %.
 - Annahme: Eine unsicher gelesene, wirklich gedruckte Zahl (z. B. eine Seitenzahl) kann dabei wegfallen. Für Zusammenfassungen ist das unkritisch.
+
+## Fehlerbehebung nach QA v0.5.3 (2026-11-18)
+- [x] 10. Fehler 1 aus der QA: Nach jedem erfolgreichen Speichern neuer Seiten eines Buchs wird die Texterkennung angestoßen. Kommt der Anstoß, während die Schleife gerade nicht wartet, merkt sie sich das und sieht noch einmal nach, statt sich schlafen zu legen. → AK1, AK9
+- Geprüft:
+  - Nach „Neu aufnehmen“ ist der neue Text nach 5 s da (vorher auch nach 25 s nicht).
+  - „Fertig“ direkt nach der letzten Aufnahme: Alle 4 Seiten sind nach 16,7 s erkannt.
+  - `f05test.mjs` und `f05qa.mjs` komplett bestanden, keine Konsolenfehler.

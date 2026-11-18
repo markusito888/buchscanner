@@ -386,6 +386,7 @@
       });
       neu.forEach((p) => { p.inDb = true; });
       s.inDb = bleiben.length > 0;
+      if (neu.length && s.art === 'buch') Texterkennung.anstossen(); // neue Seiten: Texterkennung wecken
     } catch (fehler) {
       console.warn('Speichern:', fehler);
       s.zuLoeschen.unshift(...loeschen);
