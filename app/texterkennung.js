@@ -20,6 +20,7 @@ const Texterkennung = (() => {
   let workerSprache = null;
   let wachSperre = null;
   const fehlversuche = new Map(); // Seiten-ID → Anzahl
+  const STAND = 2; // Stand der Erkennung; ältere Texte (ohne Handkorrektur) werden einmal neu erkannt
 
   // ---------- Steuerung von außen ----------
 
@@ -63,8 +64,8 @@ const Texterkennung = (() => {
       const sprache = s.sprache || 'deu';
       const id = s.seiten.find((p) => {
         const t = vorhanden.get(p);
-        // Ohne Text, andere Sprache, oder unsicher aus Version 0.5.0 (noch ohne Dreh- und Glätt-Versuche)
-        const alt = t && !t.vonHand && t.drehung === undefined && t.sicherheit < 70;
+        // Ohne Text, andere Sprache, oder aus einer älteren Erkennung (vor v0.6.1: ohne Ausblenden der Nachbarseite)
+        const alt = t && !t.vonHand && (t.v || 1) < STAND;
         return (!t || (!t.vonHand && t.sprache !== sprache) || alt) && (fehlversuche.get(p) || 0) < 2;
       });
       if (id) return { scanId: s.id, seitenId: id, sprache };
@@ -136,7 +137,7 @@ const Texterkennung = (() => {
           if (!daten.original) { fehlversuche.set(seitenId, 2); continue; } // Seite ohne Bild (F06): nichts zu erkennen
           const best = await erkennen(daten.original);
           if (!best) continue; // Kamera wurde geöffnet: später noch einmal
-          const eintrag = { id: seitenId, text: aufbereiten(best.data.blocks), sicherheit: Math.round(best.sicherheit), vonHand: false, sprache, drehung: best.drehung };
+          const eintrag = { id: seitenId, text: aufbereiten(best.data.blocks), sicherheit: Math.round(best.sicherheit), vonHand: false, sprache, drehung: best.drehung, v: STAND };
           if (await Speicher.textSetzen(eintrag)) gespeichert(scanId, eintrag);
           fehlversuche.delete(seitenId);
         } catch (fehler) {
@@ -167,17 +168,60 @@ const Texterkennung = (() => {
   async function erkennen(original) {
     let best = null;
     for (const v of VERSUCHE) {
-      if (kameraOffen) return null;
+      if (kameraOffen) { if (best) freigeben(best.bild); return null; }
       const art = { drehung: v.glaetten ? best.drehung : v.drehung, glaetten: v.glaetten || 0 };
       const bild = await vorbereiten(original, art);
       const { data } = await worker.recognize(bild, {}, { text: true, blocks: true });
-      bild.width = 1; bild.height = 1;
       const sicherheit = data.confidence || 0;
-      if (!best || sicherheit > best.sicherheit) best = { data, sicherheit, drehung: art.drehung };
+      if (!best || sicherheit > best.sicherheit) { if (best) freigeben(best.bild); best = { data, sicherheit, drehung: art.drehung, bild }; }
+      else freigeben(bild);
       if (best.sicherheit >= 70) break;
       if (!best.data.text || best.data.text.trim().split(/\s+/).length < 3) break; // (fast) leere Seite
     }
+    // Streifen der Nachbarseite am Rand? Dann nur den Hauptbereich noch einmal erkennen
+    const bereich = hauptBereich(best.data.blocks, best.bild.width, best.bild.height);
+    if (bereich && !kameraOffen) {
+      const { data } = await worker.recognize(best.bild, { rectangle: bereich }, { text: true, blocks: true });
+      best = { ...best, data, sicherheit: data.confidence || 0 };
+    }
+    freigeben(best.bild);
+    delete best.bild;
     return best;
+  }
+
+  function freigeben(bild) { bild.width = 1; bild.height = 1; }
+
+  // Wo stehen die Wörter? Waagerechte Verteilung in 200 Streifen, gewichtet mit der Wort-Höhe.
+  // Gibt es neben dem Haupttext am linken oder rechten Rand einen schmalen, durch eine Lücke getrennten
+  // Bereich (abgeschnittene Zeilen der Nachbarseite), Ergebnis: Rechteck des Hauptbereichs, sonst null.
+  // Echte zweite Spalten sind breit und bleiben unberührt.
+  function hauptBereich(bloecke, breite, hoehe) {
+    const N = 200;
+    const dichte = new Float32Array(N);
+    for (const b of bloecke || []) for (const p of b.paragraphs || []) for (const l of p.lines || []) for (const w of l.words || []) {
+      if (!w.text || !w.text.trim()) continue;
+      const von = Math.max(0, Math.floor((w.bbox.x0 / breite) * N)), bis = Math.min(N - 1, Math.floor((w.bbox.x1 / breite) * N));
+      for (let i = von; i <= bis; i++) dichte[i] += w.bbox.y1 - w.bbox.y0;
+    }
+    const max = Math.max(...dichte);
+    if (!max) return null;
+    // Zusammenhängende Bereiche über 15 % der höchsten Dichte (Lücken bis 2 Streifen werden überbrückt)
+    const bereiche = [];
+    for (let i = 0; i < N; i++) {
+      if (dichte[i] < max * 0.15) continue;
+      const letzter = bereiche[bereiche.length - 1];
+      if (letzter && i - letzter.bis <= 3) { letzter.bis = i; letzter.summe += dichte[i]; }
+      else bereiche.push({ von: i, bis: i, summe: dichte[i] });
+    }
+    if (bereiche.length < 2) return null;
+    const haupt = bereiche.reduce((a, b) => (b.summe > a.summe ? b : a));
+    const hauptBreite = haupt.bis - haupt.von + 1;
+    const amRand = bereiche.filter((b) => b !== haupt && (b.von < N * 0.15 || b.bis > N * 0.85) && b.bis - b.von + 1 < hauptBreite * 0.4);
+    if (!amRand.length || amRand.length !== bereiche.length - 1) return null; // nur Randstreifen, keine echten Spalten
+    const rand = Math.round(breite * 0.015);
+    const left = Math.max(0, Math.round((haupt.von / N) * breite) - rand);
+    const right = Math.min(breite, Math.round(((haupt.bis + 1) / N) * breite) + rand);
+    return { left, top: 0, width: right - left, height: hoehe };
   }
 
   // ---------- Text aufbereiten ----------

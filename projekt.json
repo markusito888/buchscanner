@@ -145,6 +145,10 @@
     {
       "datum": "2026-11-18",
       "text": "F06 Text-Export gebaut (v0.6.0): .md mit Hinweis an Claude und Seitenmarken, EPUB für Kindle, Bilder löschen und Nur-Text-Bücher."
+    },
+    {
+      "datum": "2026-11-18",
+      "text": "v0.6.1: Streifen der Nachbarseite am Bildrand wird bei der Texterkennung ausgeblendet; ältere Texte werden einmal neu erkannt."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

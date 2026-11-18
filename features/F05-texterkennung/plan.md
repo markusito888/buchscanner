@@ -90,3 +90,13 @@ Beim iPhone-Test lieferten einige Seiten nur Zeichensalat. Sie bekamen zwar ein 
   - Nach „Neu aufnehmen“ ist der neue Text nach 5 s da (vorher auch nach 25 s nicht).
   - „Fertig“ direkt nach der letzten Aufnahme: Alle 4 Seiten sind nach 16,7 s erkannt.
   - `f05test.mjs` und `f05qa.mjs` komplett bestanden, keine Konsolenfehler.
+
+## Nachbesserung v0.6.1 (2026-11-18): Streifen der Nachbarseite
+Beim iPhone-Test standen Wörter an falschen Stellen. Ursache: Am Rand des Fotos ist ein Streifen der Nachbarseite zu sehen, und die Erkennung mischt dessen abgeschnittene Zeilen in die Zeilen der eigentlichen Seite. Nachgestellt ergab das 40 % Zeichenfehler.
+- [x] 11. Nach der Erkennung misst die App die waagerechte Verteilung der Wörter (200 Streifen). Gibt es neben dem Haupttext am linken oder rechten Rand einen schmalen, durch eine Lücke getrennten Bereich (weniger als 40 % der Breite des Haupttextes), wird nur der Hauptbereich noch einmal erkannt. Echte zweite Spalten sind breiter und bleiben unberührt. → AK12
+- [x] 12. Texte aus einer älteren Erkennung (ohne Stand `v: 2`) und ohne Handkorrektur werden einmal neu erkannt, solange die Fotos noch da sind. → AK4
+- Geprüft:
+  - Seite mit breitem Streifen der Nachbarseite: 0 % Fehler (vorher 40 %).
+  - Normale Seite weiter 0 %, gedrehte Seite weiter 3 %.
+  - Die übrigen F05-Werte sind unverändert.
+- Grenze: Einzelne Wortreste, die direkt an den Haupttext anschließen (ohne sichtbare Lücke), werden nicht erkannt. Abhilfe: das Buch so fotografieren, dass die Nachbarseite möglichst wenig im Bild ist, oder später F07 (Ränder finden).

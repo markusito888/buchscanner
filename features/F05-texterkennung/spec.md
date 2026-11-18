@@ -68,6 +68,7 @@ Die App erkennt aus den Seiten eines Buch-Scans den Text, direkt auf dem iPhone 
 - Unsichere Seiten: gelbes „!“ und der Zähler „N Seiten unsicher“ mit Sprung zur ersten (bestätigt mit der Spec, 2026-11-16).
 - Lücken logisch ergänzen → Claude erledigt das beim Export (Hinweis in der .md-Datei, F06). In F05 werden unsichere Wörter nur als „[?Wort]“ markiert. Kein Wörterbuch und keine KI in der App (2026-11-16).
 - Gedrehte Seiten und Farbflächen im Rasterdruck → Bei unsicheren Seiten versucht die App es automatisch noch einmal: gedreht (90°, 270°, 180°) und geglättet. Das sicherste Ergebnis zählt (Nachbesserung nach dem iPhone-Test, 2026-11-17).
+- Streifen der Nachbarseite am Bildrand → wird erkannt und ausgeblendet, nur der Hauptbereich zählt. Ältere Texte werden dafür einmal neu erkannt (Nachbesserung nach dem iPhone-Test, 2026-11-18).
 - Für die Erkennung nutzt die App immer die aufbereitete Fassung „Dokument“, egal welche Kontrast-Stufe gerade angezeigt wird (Annahme, bessere Ergebnisse).
 
 ## Offene Fragen
