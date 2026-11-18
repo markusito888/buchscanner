@@ -77,3 +77,9 @@ Beim iPhone-Test lieferten einige Seiten nur Zeichensalat. Sie bekamen zwar ein 
   - Orange Rasterfläche mit grobem Raster: Fehler von 42 % auf 12 % gesunken.
   - Normale Seiten: unverändert, 0 % Fehler, kein zusätzlicher Durchgang.
 - Annahme: Die Anzeige des Bildes bleibt gedreht. Das Bild gerade zu drehen gehört zu F07 (Seiten gerade ziehen).
+
+## Nachbesserung v0.5.2 (2026-11-18): Störzeichen
+- [x] 9. Entfernt werden einzelne senkrechte Striche „|“ (Seitenrand, Bundsteg) und unsichere „Wörter“ ohne einen einzigen Buchstaben, etwa „[?;]“, „[?©]“ oder „[?2]“. Schon gespeicherte Texte, die nicht von Hand geändert wurden, bereinigt die App einmal beim Start. → AK11, AK11a
+- Geprüft am Text vom iPhone-Screenshot des Nutzers: Alle Striche und Symbolreste sind weg. Echte unsichere Wörter wie „[?Schließlich.]“ bleiben markiert.
+- Regression F05: unverändert, 0 % Fehler, gedrehte Seite 3 %.
+- Annahme: Eine unsicher gelesene, wirklich gedruckte Zahl (z. B. eine Seitenzahl) kann dabei wegfallen. Für Zusammenfassungen ist das unkritisch.

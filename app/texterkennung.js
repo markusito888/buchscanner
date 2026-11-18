@@ -28,7 +28,7 @@ const Texterkennung = (() => {
       if (document.visibilityState === 'visible') anstossen(); else wachLassen();
     });
     window.addEventListener('online', anstossen);
-    anstossen();
+    alteTexteBereinigen().finally(anstossen);
   }
 
   function anstossen() {
@@ -204,7 +204,28 @@ const Texterkennung = (() => {
         if (text) absaetze.push(text);
       }
     }
-    return absaetze.join('\n\n');
+    return bereinigen(absaetze.join('\n\n'));
+  }
+
+  // Störzeichen entfernen: einzelne senkrechte Striche (Seitenrand, Bundsteg) und unsichere
+  // „Wörter“ ganz ohne Buchstaben (Satzzeichen, Symbole, Ziffern aus Schmutz oder Rändern).
+  function bereinigen(text) {
+    const stoerend = (t) => /^[|¦]+$/.test(t) || (/^\[\?[^\]]*\]$/.test(t) && !/\p{L}/u.test(t.slice(2, -1)));
+    return text.split('\n\n')
+      .map((absatz) => absatz.split(' ').filter((t) => t && !stoerend(t)).join(' ').trim())
+      .filter(Boolean)
+      .join('\n\n');
+  }
+
+  // Einmalig: schon gespeicherte, nicht von Hand geänderte Texte ebenso bereinigen
+  async function alteTexteBereinigen() {
+    try {
+      for (const t of await Speicher.alleTexte()) {
+        if (t.vonHand) continue;
+        const sauber = bereinigen(t.text || '');
+        if (sauber !== t.text) await Speicher.textSetzen({ ...t, text: sauber });
+      }
+    } catch (fehler) { console.warn('Bereinigen:', fehler); }
   }
 
   // ---------- Bildschirm wach halten ----------
@@ -221,5 +242,5 @@ const Texterkennung = (() => {
     if (wachSperre) { wachSperre.release().catch(() => {}); wachSperre = null; }
   }
 
-  return { SPRACHEN, einrichten, kamera, vorrangSetzen, anstossen, aufbereiten };
+  return { SPRACHEN, einrichten, kamera, vorrangSetzen, anstossen, aufbereiten, bereinigen };
 })();

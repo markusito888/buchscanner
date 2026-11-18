@@ -1,6 +1,6 @@
 // Buchscanner – Startseite, Hinweise, Offline-Betrieb und Update-Hinweis.
 // Versionsnummer auch in sw.js ändern (werkzeuge/version.sh macht beides).
-const VERSION = '0.5.1';
+const VERSION = '0.5.2';
 
 document.getElementById('version').textContent = VERSION;
 
