@@ -123,6 +123,14 @@ const Speicher = (() => {
     }).then((b) => b.ok);
   }
 
+  // F06: Fotos der Seiten löschen, Seiten-Eintrag (ID, Maße) und Text bleiben
+  function bilderLoeschen(ids) {
+    return transaktion('readwrite', (t) => ids.forEach((id) => {
+      const a = t.seiten.get(id);
+      a.onsuccess = () => { if (a.result) t.seiten.put({ ...a.result, original: null, vorschau: null }); };
+    }));
+  }
+
   function texteLoeschen(ids) {
     return transaktion('readwrite', (t) => ids.forEach((id) => t.texte.delete(id)));
   }
@@ -135,5 +143,5 @@ const Speicher = (() => {
     if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   }
 
-  return { alleScans, scanLaden, seiteLaden, sichern, scanLoeschen, dauerhaftAnfragen, alleTexte, texteLaden, textSetzen, texteLoeschen };
+  return { alleScans, scanLaden, seiteLaden, sichern, scanLoeschen, dauerhaftAnfragen, alleTexte, texteLaden, textSetzen, texteLoeschen, bilderLoeschen };
 })();

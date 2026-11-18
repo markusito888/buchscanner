@@ -133,6 +133,7 @@ const Texterkennung = (() => {
           melden({ art: 'laeuft', scanId, sprache });
           const daten = await Speicher.seiteLaden(seitenId);
           if (!daten || kameraOffen) continue; // Seite weg oder Kamera inzwischen offen
+          if (!daten.original) { fehlversuche.set(seitenId, 2); continue; } // Seite ohne Bild (F06): nichts zu erkennen
           const best = await erkennen(daten.original);
           if (!best) continue; // Kamera wurde geöffnet: später noch einmal
           const eintrag = { id: seitenId, text: aufbereiten(best.data.blocks), sicherheit: Math.round(best.sicherheit), vonHand: false, sprache, drehung: best.drehung };

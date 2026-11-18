@@ -279,7 +279,8 @@
   function seiteAusSpeicher(d) {
     const seite = {
       id: d.id, breite: d.breite, hoehe: d.hoehe, original: d.original, vorschauBlob: d.vorschau,
-      bilder: { farbe: URL.createObjectURL(d.vorschau) }, laden: {}, fertig: true, inDb: true,
+      bilder: d.vorschau ? { farbe: URL.createObjectURL(d.vorschau) } : {}, laden: {}, fertig: true, inDb: true,
+      ohneBild: !d.original, // F06: Fotos gelöscht, nur Text
     };
     seite.bereit = Promise.resolve(seite);
     return seite;
@@ -375,7 +376,8 @@
       id: s.id, art: s.art, name: s.name, kontrast: s.kontrast, angelegt: s.angelegt, geaendert: s.geaendert,
       sprache: s.sprache || 'deu',
       seiten: bleiben.map((p) => p.id),
-      bytes: bleiben.reduce((summe, p) => summe + p.original.size + p.vorschauBlob.size, 0),
+      bytes: bleiben.reduce((summe, p) => summe + (p.original ? p.original.size : 0) + (p.vorschauBlob ? p.vorschauBlob.size : 0), 0),
+      nurText: bleiben.length > 0 && bleiben.every((p) => p.ohneBild),
     };
     try {
       Speicher.dauerhaftAnfragen();
@@ -435,7 +437,7 @@
     zaehlerAktualisieren();
     const letzte = ersetzen === null ? scan.seiten[scan.seiten.length - 1] : null;
     $('letzte').hidden = true;
-    if (letzte) letzte.bereit.then(() => { $('letzte').src = letzte.bilder.farbe; $('letzte').hidden = false; }).catch(() => {});
+    if (letzte && !letzte.ohneBild) letzte.bereit.then(() => { $('letzte').src = letzte.bilder.farbe; $('letzte').hidden = false; }).catch(() => {});
     kameraStarten();
   }
 
@@ -613,7 +615,11 @@
       k.setAttribute('aria-pressed', String(k.dataset.kontrast === scan.kontrast));
     });
     const buch = scan.art === 'buch';
-    $('sprache-wahl').hidden = !buch;
+    const nurText = scan.seiten.length > 0 && scan.seiten.every((p) => p.ohneBild);
+    $('kontrast-wahl').hidden = nurText;
+    $('ueb-export').hidden = !buch;
+    $('bilder-loeschen').hidden = true; // wird in textStatusZeigen gesetzt (nur Buch)
+    $('sprache-wahl').hidden = !buch || nurText;
     $('ocr-zeile').hidden = !buch;
     document.querySelectorAll('[data-sprache]').forEach((k) => {
       k.setAttribute('aria-pressed', String(k.dataset.sprache === scan.sprache));
@@ -631,13 +637,23 @@
       kachel.type = 'button';
       kachel.className = 'kachel';
       kachel.setAttribute('aria-label', `Seite ${i + 1}`);
-      const img = new Image();
-      img.alt = '';
-      if (seite.bilder[modus]) img.src = seite.bilder[modus];
       const nr = document.createElement('span');
       nr.className = 'kachel-nr';
       nr.textContent = String(i + 1);
-      kachel.append(img, nr);
+      let img = null;
+      if (seite.ohneBild) {
+        // F06: Nur Text – Kachel zeigt den Textanfang
+        kachel.classList.add('kachel-text');
+        const anfang = document.createElement('span');
+        anfang.className = 'kachel-textanfang';
+        anfang.textContent = seite.textEintrag ? seite.textEintrag.text.slice(0, 160) : '';
+        kachel.append(anfang, nr);
+      } else {
+        img = new Image();
+        img.alt = '';
+        if (seite.bilder[modus]) img.src = seite.bilder[modus];
+        kachel.append(img, nr);
+      }
       if (scan.art === 'buch' && unsicher(seite)) kachel.append(warnZeichen());
       kachel.addEventListener('click', () => { aktuell = i; zeigeGross(); });
       return [seite, img, kachel];
@@ -645,7 +661,7 @@
     raster.replaceChildren(...bilder.map((b) => b[2]));
     for (const [seite, img] of bilder) {
       if (lauf !== rasterLauf) return;
-      if (img.src) continue;
+      if (!img || img.src) continue;
       try {
         const url = await vorschauUrl(seite, modus);
         if (lauf !== rasterLauf) return; // inzwischen neu aufgebaut
@@ -727,9 +743,10 @@
     $('gross-vor').disabled = aktuell === 0;
     $('gross-nach').disabled = aktuell === scan.seiten.length - 1;
     $('gross-sichern').hidden = scan.art !== 'normal';
+    $('gross-neu').hidden = Boolean(seite.ohneBild);
     grossModusZeigen();
     textFeldFuellen(seite);
-    zeichneGross(seite);
+    if (!seite.ohneBild) zeichneGross(seite);
   }
 
   async function zeichneGross(seite) {
@@ -808,6 +825,7 @@
 
   // art: 'pdf' | 'bilder'; nummern: Seiten (Index), die gespeichert werden
   async function speichern(art, nummern) {
+    nachTeilen = null;
     const s = scan;
     const lauf = ++exportLauf;
     exportDateien = null;
@@ -865,11 +883,14 @@
     if (navigator.canShare && navigator.canShare({ files: dateien })) {
       try {
         await navigator.share({ files: dateien });
+        nachTeilenAusfuehren();
       } catch (fehler) {
+        nachTeilen = null;
         if (fehler.name !== 'AbortError') { console.warn('Teilen:', fehler); zeigeHinweis('Teilen fehlgeschlagen – bitte noch einmal versuchen'); }
       }
     } else {
       herunterladen(dateien);
+      nachTeilenAusfuehren();
     }
   });
 
@@ -891,6 +912,101 @@
   });
 
   $('gross-sichern').addEventListener('click', () => { if (scan) speichern('bilder', [aktuell]); });
+
+  // ---------- Text-Export und Bilder löschen (F06, Buch) ----------
+
+  let nachTeilen = null; // wird nach erfolgreichem Teilen über „Fertig – Teilen“ ausgeführt
+  function nachTeilenAusfuehren() {
+    const n = nachTeilen;
+    nachTeilen = null;
+    if (n) n();
+  }
+
+  // Teilen direkt im Tipp; verweigert Safari das, über „Fertig – Teilen“ (wie F04)
+  async function dateienTeilen(dateien, danach) {
+    if (!(navigator.canShare && navigator.canShare({ files: dateien }))) {
+      herunterladen(dateien);
+      danach();
+      return;
+    }
+    try {
+      await navigator.share({ files: dateien });
+      danach();
+    } catch (fehler) {
+      if (fehler.name === 'AbortError') return;
+      if (fehler.name === 'NotAllowedError') {
+        exportDateien = dateien;
+        nachTeilen = danach;
+        $('fortschritt-text').textContent = dateien.length === 1 ? 'Datei ist fertig.' : `${dateien.length} Dateien sind fertig.`;
+        $('fortschritt-abbrechen').hidden = false;
+        fortschritt.showModal();
+        $('fortschritt-teilen').hidden = false;
+        return;
+      }
+      console.warn('Teilen:', fehler);
+      zeigeHinweis('Teilen fehlgeschlagen – bitte noch einmal versuchen');
+    }
+  }
+
+  async function exportieren(art) {
+    $('export-wahl').close();
+    const s = scan;
+    if (!s) return;
+    textSichern();
+    const seiten = s.seiten.map((p, i) => ({ nr: i + 1, text: textFertig(p) ? p.textEintrag.text : null }));
+    const fehlen = seiten.filter((x) => x.text === null).length;
+    if (fehlen && !(await frage(`${fehlen === 1 ? '1 Seite hat' : `${fehlen} Seiten haben`} noch keinen Text – trotzdem exportieren?`, 'Exportieren'))) return;
+    let dateien;
+    try {
+      if (art === 'md') {
+        dateien = Export.md(s.name, seiten).map((t) => new File([t.text], `${dateiname(t.name)}.md`, { type: 'text/markdown' }));
+      } else {
+        dateien = [new File([Export.epub(s.name, s.sprache, s.id, seiten)], `${dateiname(s.name)}.epub`, { type: 'application/epub+zip' })];
+      }
+    } catch (fehler) {
+      console.warn('Export:', fehler);
+      zeigeHinweis('Export fehlgeschlagen – bitte noch einmal versuchen');
+      return;
+    }
+    await dateienTeilen(dateien, () => bilderFrage(s));
+  }
+
+  const bildBytes = (s) => s.seiten.reduce((summe, p) => summe + (p.original ? p.original.size : 0) + (p.vorschauBlob ? p.vorschauBlob.size : 0), 0);
+  const bilderLoeschbar = (s) => s.art === 'buch' && s.seiten.length > 0 && s.seiten.every(textFertig) && s.seiten.some((p) => !p.ohneBild);
+
+  async function bilderFrage(s) {
+    if (scan !== s || !bilderLoeschbar(s)) return;
+    const mb = Math.max(1, Math.round(bildBytes(s) / 1e6));
+    if (await frage(`Bilder jetzt löschen? Der Text bleibt erhalten (spart ca. ${mb} MB).`, 'Bilder löschen', 'Behalten')) bilderLoeschen(s);
+  }
+
+  async function bilderLoeschen(s) {
+    textSichern();
+    const mitBild = s.seiten.filter((p) => !p.ohneBild);
+    try {
+      await s.lauf;
+      await Speicher.bilderLoeschen(mitBild.map((p) => p.id));
+    } catch (fehler) {
+      console.warn('Bilder löschen:', fehler);
+      zeigeHinweis('Löschen fehlgeschlagen');
+      return;
+    }
+    mitBild.forEach((p) => {
+      seiteFreigeben(p);
+      p.original = null;
+      p.vorschauBlob = null;
+      p.laden = {};
+      p.ohneBild = true;
+    });
+    await sichern(s);
+    if (scan === s && !$('ansicht-uebersicht').hidden) zeigeUebersicht();
+  }
+
+  $('ueb-export').addEventListener('click', () => { if (scan && scan.seiten.length) $('export-wahl').showModal(); });
+  $('export-md').addEventListener('click', () => exportieren('md'));
+  $('export-epub').addEventListener('click', () => exportieren('epub'));
+  $('export-nein').addEventListener('click', () => $('export-wahl').close());
+  $('bilder-loeschen').addEventListener('click', () => { if (scan) bilderFrage(scan); });
 
   // ---------- Startseite: Meine Scans ----------
 
@@ -930,7 +1046,7 @@
       const name = document.createElement('strong');
       name.textContent = eintrag.name;
       const art = document.createElement('span');
-      art.textContent = ARTEN[eintrag.art];
+      art.textContent = ARTEN[eintrag.art] + (eintrag.nurText ? ' · nur Text' : '');
       const info = document.createElement('span');
       info.textContent = `${seitenText(eintrag.seiten.length)} · ${datum(eintrag.geaendert)}`;
       text.append(name, art, info);
@@ -955,6 +1071,13 @@
         const d = await Speicher.seiteLaden(eintrag.seiten[0]);
         if (lauf !== listenLauf) return;
         if (!d) continue;
+        if (!d.vorschau) { // Nur Text: Symbol statt Vorschaubild
+          const symbol = document.createElement('span');
+          symbol.className = 'scan-symbol';
+          symbol.textContent = '¶';
+          img.replaceWith(symbol);
+          continue;
+        }
         const url = URL.createObjectURL(d.vorschau);
         listenUrls.push(url);
         img.src = url;
@@ -1021,6 +1144,7 @@
     else if (ocrStatus.scanId === scan.id && ocrStatus.art === 'offline') t = `Für ${sprache} einmal Internet nötig`;
     else t = `Text: ${fertig} von ${seitenText(gesamt)}`;
     $('ocr-status').textContent = t;
+    $('bilder-loeschen').hidden = !bilderLoeschbar(scan); // F06: erst, wenn alle Seiten Text haben
     const unsichere = scan.seiten.filter(unsicher).length;
     $('ocr-unsicher').hidden = unsichere === 0;
     $('ocr-unsicher').textContent = unsichere === 1 ? '1 Seite unsicher' : `${unsichere} Seiten unsicher`;
@@ -1058,8 +1182,9 @@
   }
   function grossModusZeigen() {
     const buch = scan && scan.art === 'buch';
-    const modus = buch ? grossModus() : 'bild';
-    $('gross-modus').hidden = !buch;
+    const ohneBild = Boolean(scan && scan.seiten[aktuell] && scan.seiten[aktuell].ohneBild);
+    const modus = ohneBild ? 'text' : buch ? grossModus() : 'bild';
+    $('gross-modus').hidden = !buch || ohneBild;
     MODI.forEach((m) => $('ansicht-gross').classList.toggle(`modus-${m}`, m === modus));
     document.querySelectorAll('[data-modus]').forEach((k) => k.setAttribute('aria-pressed', String(k.dataset.modus === modus)));
   }
@@ -1157,11 +1282,12 @@
 
   // ---------- Rückfrage ----------
 
-  function frage(text, jaText) {
+  function frage(text, jaText, neinText = 'Abbrechen') {
     return new Promise((ok) => {
       const d = $('frage');
       $('frage-text').textContent = text;
       $('frage-ja').textContent = jaText;
+      d.querySelector('button[value=nein]').textContent = neinText;
       d.returnValue = '';
       d.addEventListener('close', () => ok(d.returnValue === 'ja'), { once: true });
       d.showModal();

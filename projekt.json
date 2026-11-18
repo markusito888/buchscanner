@@ -12,8 +12,9 @@
     "claude"
   ],
   "naechsteSchritte": [
-    "/umsetzen F06 – Export .md (Claude) und EPUB (Kindle), Bilder löschen",
-    "F05 am iPhone abnehmen (100 Seiten ≤ 15 min)"
+    "Version 0.6.0 hochladen und am iPhone testen (Export an Claude, An Kindle senden, Bilder löschen)",
+    "/qa F06",
+    "F05 abnehmen (100 Seiten ≤ 15 min)"
   ],
   "notizen": "Stufe light. Web-App statt nativer App, weil Xcode auf dem Intel-iMac (macOS 14) nur eingeschränkt läuft.",
   "verlauf": [
@@ -140,6 +141,10 @@
     {
       "datum": "2026-11-18",
       "text": "Spec F06 Text-Export bestätigt: .md mit Hinweis an Claude und Seitenmarken, EPUB für Kindle, Bilder löschen nach dem Export."
+    },
+    {
+      "datum": "2026-11-18",
+      "text": "F06 Text-Export gebaut (v0.6.0): .md mit Hinweis an Claude und Seitenmarken, EPUB für Kindle, Bilder löschen und Nur-Text-Bücher."
     }
   ],
   "url": "https://markusito888.github.io/buchscanner/"

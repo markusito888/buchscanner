@@ -266,6 +266,11 @@ button:disabled { opacity: 0.35; }
 #ansicht-gross.modus-beides #gross-canvas { max-height: 38vh; max-height: 38dvh; }
 #ansicht-gross.modus-beides .gross-text { height: 30vh; height: 30dvh; }
 
+/* ---------- F06: Nur-Text-Seiten ---------- */
+.kachel.kachel-text { display: block; padding: 8px 8px 38px; text-align: left; }
+.kachel-textanfang { display: block; height: 100%; overflow: hidden; font-size: 12px; line-height: 1.35; color: var(--text-leise); }
+.scan-symbol { flex-shrink: 0; width: 48px; height: 60px; border-radius: 6px; background: var(--rand); color: var(--text-leise); font-size: 26px; line-height: 60px; text-align: center; font-family: Georgia, serif; }
+
 .fuss-knoepfe { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 10px; }
 .knopf-zweit { background: var(--flaeche); border-color: var(--rand); color: var(--akzent); }
 .ganze-breite { grid-column: 1 / -1; }

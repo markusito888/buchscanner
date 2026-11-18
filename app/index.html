@@ -84,7 +84,7 @@
       <span class="text-knopf platzhalter" aria-hidden="true"></span>
     </header>
     <div class="inhalt">
-      <div class="segment" role="group" aria-label="Kontrast">
+      <div id="kontrast-wahl" class="segment" role="group" aria-label="Kontrast">
         <button type="button" data-kontrast="farbe">Farbe</button>
         <button type="button" data-kontrast="grau">Grau</button>
         <button type="button" data-kontrast="dokument">Dokument</button>
@@ -99,12 +99,14 @@
         <button id="ocr-unsicher" class="ocr-unsicher" type="button" hidden></button>
       </div>
       <div id="raster" class="raster"></div>
+      <button id="bilder-loeschen" class="knopf-klein scan-loeschen" type="button" hidden>Bilder löschen, Text behalten</button>
       <button id="scan-loeschen" class="knopf-klein knopf-gefahr scan-loeschen" type="button">Scan löschen</button>
     </div>
     <div class="fuss-leiste">
       <div class="fuss-knoepfe">
         <button id="ueb-plus" class="knopf-voll" type="button">+ Seiten</button>
         <button id="ueb-speichern" class="knopf-voll knopf-zweit" type="button" hidden>Speichern</button>
+        <button id="ueb-export" class="knopf-voll knopf-zweit" type="button" hidden>Exportieren</button>
       </div>
     </div>
   </section>
@@ -178,6 +180,16 @@
     </form>
   </dialog>
 
+  <!-- Export (Buch): Auswahl -->
+  <dialog id="export-wahl" class="frage">
+    <p>Exportieren als …</p>
+    <div class="wahl-knoepfe">
+      <button id="export-md" type="button" class="knopf-klein knopf-akzent">Text für Claude (.md)</button>
+      <button id="export-epub" type="button" class="knopf-klein knopf-akzent">E-Book für Kindle (EPUB)</button>
+      <button id="export-nein" type="button" class="knopf-klein">Abbrechen</button>
+    </div>
+  </dialog>
+
   <!-- Speichern: Fortschritt und Teilen -->
   <dialog id="fortschritt" class="frage">
     <p id="fortschritt-text"></p>
@@ -198,6 +210,7 @@
   <script src="speicher.js"></script>
   <script src="pdf.js"></script>
   <script src="texterkennung.js"></script>
+  <script src="export.js"></script>
   <script src="scan.js"></script>
 </body>
 </html>
